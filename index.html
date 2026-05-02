@@ -32,25 +32,53 @@
   }
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'Noto Sans TC', sans-serif; overflow: hidden; }
-  
+
   /* APP SHELL */
   #app { display: flex; flex-direction: column; height: 100vh; height: 100dvh; }
-  
+
   /* HEADER */
   #header {
-    padding: calc(var(--safe-top) + 12px) 16px 12px;
+    padding: calc(var(--safe-top) + 10px) 16px 10px;
     background: var(--bg2);
     border-bottom: 1px solid var(--border);
     flex-shrink: 0;
   }
+  .header-row { display: flex; align-items: center; justify-content: space-between; }
   .header-title { font-family: 'Noto Serif TC', serif; font-size: 18px; font-weight: 700; color: var(--gold); letter-spacing: 2px; }
   .header-sub { font-size: 11px; color: var(--text2); margin-top: 1px; letter-spacing: 1px; }
+  .header-datetime { text-align: right; }
+  .header-time { font-family: 'DM Mono'; font-size: 16px; color: var(--gold-light); letter-spacing: 1px; }
+  .header-date { font-size: 10px; color: var(--text2); margin-top: 1px; letter-spacing: 0.5px; }
+
+  /* VERSION BADGE - top */
+  .version-bar {
+    background: var(--bg3);
+    border-bottom: 1px solid var(--border);
+    padding: 4px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-shrink: 0;
+  }
+  .version-btn {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text2);
+    font-family: 'DM Mono';
+    font-size: 10px;
+    padding: 3px 8px;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: all 0.15s;
+  }
+  .version-btn:active { background: var(--border); color: var(--gold); }
 
   /* BALANCE HERO */
   #balance-hero {
     background: linear-gradient(135deg, #161b22 0%, #1a1f2a 100%);
     border-bottom: 1px solid var(--border);
-    padding: 18px 16px 16px;
+    padding: 16px 16px 14px;
     flex-shrink: 0;
     position: relative;
     overflow: hidden;
@@ -77,7 +105,7 @@
 
   /* CONTENT */
   #content { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: calc(var(--safe-bot) + 80px); }
-  
+
   /* SECTION */
   .section { padding: 14px 16px 0; }
   .section-title { font-size: 11px; color: var(--text2); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
@@ -98,8 +126,14 @@
   .record-delete { position: absolute; top: 10px; right: 10px; background: none; border: none; color: var(--text2); font-size: 16px; cursor: pointer; padding: 4px 6px; border-radius: 6px; }
   .record-delete:active { background: var(--red-bg); color: var(--red); }
 
-  /* UNIT GRID */
-  .unit-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 14px 16px 0; }
+  /* UNIT GRID - 6 rows x 2 cols */
+  .unit-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: repeat(6, auto);
+    gap: 8px;
+    padding: 14px 16px 0;
+  }
   .unit-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 8px; text-align: center; cursor: pointer; transition: all 0.15s; }
   .unit-card:active { transform: scale(0.96); }
   .unit-card.all-paid { border-color: var(--green); background: var(--green-bg); }
@@ -149,7 +183,7 @@
   .confirm-box { background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; padding: 24px; width: 100%; max-width: 320px; transform: scale(0.92); transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1); }
   .confirm-overlay.show .confirm-box { transform: scale(1); }
   .confirm-title { font-family: 'Noto Serif TC', serif; font-size: 16px; font-weight: 700; color: var(--gold); text-align: center; margin-bottom: 8px; }
-  .confirm-msg { font-size: 13px; color: var(--text2); text-align: center; line-height: 1.6; margin-bottom: 20px; }
+  .confirm-msg { font-size: 13px; color: var(--text2); text-align: center; line-height: 1.6; margin-bottom: 20px; white-space: pre-line; }
   .confirm-btns { display: flex; gap: 10px; }
 
   /* UNIT DETAIL SHEET */
@@ -166,6 +200,42 @@
 
   .empty { text-align: center; padding: 60px 20px; color: var(--text2); font-size: 14px; }
 
+  /* VERSION HISTORY OVERLAY */
+  .version-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 300; display: flex; align-items: flex-end; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+  .version-overlay.show { opacity: 1; pointer-events: all; }
+  .version-sheet { background: var(--bg2); border-radius: 20px 20px 0 0; border-top: 1px solid var(--border); padding: 0 16px calc(var(--safe-bot) + 20px); width: 100%; max-height: 75vh; overflow-y: auto; transform: translateY(40px); transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); }
+  .version-overlay.show .version-sheet { transform: translateY(0); }
+  .version-item { padding: 14px 0; border-bottom: 1px solid var(--border); }
+  .version-item:last-child { border-bottom: none; }
+  .version-tag { display: inline-block; font-family: 'DM Mono'; font-size: 11px; background: var(--blue-bg); color: var(--blue); border: 1px solid var(--blue); border-radius: 5px; padding: 2px 8px; margin-bottom: 6px; }
+  .version-tag.latest { background: var(--green-bg); color: var(--green); border-color: var(--green); }
+  .version-date { font-size: 10px; color: var(--text2); margin-bottom: 6px; font-family: 'DM Mono'; }
+  .version-notes { font-size: 12px; color: var(--text); line-height: 1.7; }
+  .version-notes li { list-style: none; padding-left: 0; margin-bottom: 2px; }
+  .version-notes li::before { content: '· '; color: var(--gold); }
+
+  /* FOOTER VERSION */
+  #footer-version {
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    padding: 6px 16px calc(var(--safe-bot) + 6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .footer-ver-btn {
+    background: none;
+    border: none;
+    color: var(--text2);
+    font-family: 'DM Mono';
+    font-size: 10px;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    padding: 2px 8px;
+  }
+  .footer-ver-btn:active { color: var(--gold); }
+
   /* SCROLLBAR */
   #content::-webkit-scrollbar { width: 3px; }
   #content::-webkit-scrollbar-track { background: transparent; }
@@ -178,11 +248,26 @@
 <body>
 
 <div id="app">
+  <!-- HEADER -->
   <div id="header">
-    <div class="header-title">偉士大樓</div>
-    <div class="header-sub">管理委員費收支系統</div>
+    <div class="header-row">
+      <div>
+        <div class="header-title">偉士大樓</div>
+        <div class="header-sub">管理委員費收支系統</div>
+      </div>
+      <div class="header-datetime">
+        <div class="header-time" id="clock">--:--:--</div>
+        <div class="header-date" id="datedisp">----/--/--</div>
+      </div>
+    </div>
   </div>
 
+  <!-- VERSION BAR TOP -->
+  <div class="version-bar">
+    <button class="version-btn" onclick="openVersionSheet()">v1.1.0 · 更新履歷</button>
+  </div>
+
+  <!-- BALANCE HERO -->
   <div id="balance-hero">
     <div class="balance-label">目前結餘</div>
     <div class="balance-amount"><span>NT$</span><span id="balance-num">97,246</span></div>
@@ -202,12 +287,14 @@
     </div>
   </div>
 
+  <!-- TABS -->
   <div id="tabs">
     <div class="tab active" onclick="switchTab('records')">帳務記錄</div>
     <div class="tab" onclick="switchTab('units')">住戶管理</div>
     <div class="tab" onclick="switchTab('history')">收支明細</div>
   </div>
 
+  <!-- CONTENT -->
   <div id="content">
     <!-- Records Tab -->
     <div id="tab-records">
@@ -239,6 +326,11 @@
         <div id="history-list"></div>
       </div>
     </div>
+  </div>
+
+  <!-- FOOTER VERSION -->
+  <div id="footer-version">
+    <button class="footer-ver-btn" onclick="openVersionSheet()">偉士大樓管委費系統 · v1.1.0 · 點擊查看更新履歷</button>
   </div>
 
   <!-- FAB -->
@@ -314,7 +406,7 @@
     </div>
     <div class="form-btns">
       <button class="btn btn-cancel" onclick="closeSheet('expense')">取消</button>
-      <button class="btn btn-ok btn danger" style="background:var(--red);color:#fff" onclick="confirmAdd('expense')">確認新增</button>
+      <button class="btn btn-ok" style="background:var(--red);color:#fff" onclick="confirmAdd('expense')">確認新增</button>
     </div>
   </div>
 </div>
@@ -342,19 +434,60 @@
   </div>
 </div>
 
-<script>
-// ── STATE ──────────────────────────────────────────────
-const INIT_BALANCE = 97246;
-const MONTHLY_FEE = 9000; // 12戶 × 750？ 可調整。這裡每戶每月收固定比例
-const MONTHS = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
-const UNITS = Array.from({length:12}, (_,i) => `${i+1}戶`);
+<!-- Version History Sheet -->
+<div class="version-overlay" id="version-overlay" onclick="closeVersionIfOutside(event)">
+  <div class="version-sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">更新履歷</div>
 
+    <div class="version-item">
+      <div><span class="version-tag latest">v1.1.0</span></div>
+      <div class="version-date">2025-01-01</div>
+      <ul class="version-notes">
+        <li>頁首／頁尾加入版本號，點擊可查看更新履歷</li>
+        <li>頁首加入即時日期時間顯示</li>
+        <li>住戶管理改為 6行×2列 排列</li>
+        <li>左欄由下而上：426-1 ～ 426-6</li>
+        <li>右欄由下而上：424-1 ～ 424-6</li>
+      </ul>
+    </div>
+
+    <div class="version-item">
+      <div><span class="version-tag">v1.0.0</span></div>
+      <div class="version-date">2024-12-01</div>
+      <ul class="version-notes">
+        <li>系統初版上線</li>
+        <li>帳務記錄、住戶管理、收支明細三大功能</li>
+        <li>期初結餘 NT$ 97,246</li>
+        <li>12戶繳費狀態追蹤（含月份切換）</li>
+        <li>PWA 安裝支援（iOS / Android）</li>
+      </ul>
+    </div>
+
+    <button class="btn btn-cancel" style="width:100%;margin-top:8px" onclick="closeVersionSheet()">關閉</button>
+  </div>
+</div>
+
+<script>
+// ── UNITS DEFINITION ──────────────────────────────────
+// 左欄由下而上：426-1 ~ 426-6  (grid row 6 down to 1, col 1)
+// 右欄由下而上：424-1 ~ 424-6  (grid row 6 down to 1, col 2)
+// Grid order: row1col1=426-6, row1col2=424-6 ... row6col1=426-1, row6col2=424-1
+const UNIT_LEFT  = ['426-6','426-5','426-4','426-3','426-2','426-1']; // top→bottom display = floor 6→1
+const UNIT_RIGHT = ['424-6','424-5','424-4','424-3','424-2','424-1'];
+// Interleave: [L6,R6, L5,R5, ..., L1,R1]
+const UNITS = [];
+for (let i = 0; i < 6; i++) { UNITS.push(UNIT_LEFT[i]); UNITS.push(UNIT_RIGHT[i]); }
+
+const INIT_BALANCE = 97246;
+const MONTHS = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+
+// ── STATE ──────────────────────────────────────────────
 function loadState() {
   try {
-    const s = localStorage.getItem('weishi-state');
+    const s = localStorage.getItem('weishi-state-v2');
     if (s) return JSON.parse(s);
   } catch(e) {}
-  // default
   const payments = {};
   UNITS.forEach(u => { payments[u] = {}; MONTHS.forEach(m => payments[u][m] = false); });
   return { records: [], payments, nextId: 1 };
@@ -363,7 +496,7 @@ function loadState() {
 let state = loadState();
 
 function saveState() {
-  localStorage.setItem('weishi-state', JSON.stringify(state));
+  localStorage.setItem('weishi-state-v2', JSON.stringify(state));
 }
 
 // ── COMPUTED ───────────────────────────────────────────
@@ -371,14 +504,30 @@ function totalIncome() { return state.records.filter(r=>r.type==='income').reduc
 function totalExpense() { return state.records.filter(r=>r.type==='expense').reduce((s,r)=>s+r.amount,0); }
 function balance() { return INIT_BALANCE + totalIncome() - totalExpense(); }
 function paidUnits() {
-  return UNITS.filter(u => MONTHS.some(m => state.payments[u][m])).length;
+  return UNITS.filter(u => MONTHS.some(m => state.payments[u] && state.payments[u][m])).length;
 }
-
 function fmt(n) { return 'NT$ ' + Math.abs(n).toLocaleString('zh-TW'); }
+
+// ── CLOCK ──────────────────────────────────────────────
+function updateClock() {
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2,'0');
+  const mm = String(now.getMinutes()).padStart(2,'0');
+  const ss = String(now.getSeconds()).padStart(2,'0');
+  document.getElementById('clock').textContent = hh + ':' + mm + ':' + ss;
+
+  const weekdays = ['日','一','二','三','四','五','六'];
+  const y = now.getFullYear();
+  const mo = String(now.getMonth()+1).padStart(2,'0');
+  const d = String(now.getDate()).padStart(2,'0');
+  const wd = weekdays[now.getDay()];
+  document.getElementById('datedisp').textContent = y + '/' + mo + '/' + d + ' 週' + wd;
+}
+setInterval(updateClock, 1000);
+updateClock();
 
 // ── RENDER ─────────────────────────────────────────────
 function render() {
-  // balance
   const b = balance();
   document.getElementById('balance-num').textContent = b.toLocaleString('zh-TW');
   document.getElementById('balance-num').style.color = b >= 0 ? 'var(--gold-light)' : 'var(--red)';
@@ -386,7 +535,6 @@ function render() {
   document.getElementById('total-expense-disp').textContent = fmt(totalExpense());
   document.getElementById('paid-units-disp').textContent = paidUnits() + ' / 12';
   document.getElementById('hist-balance').textContent = fmt(b);
-
   renderRecords();
   renderUnits();
   renderHistory();
@@ -415,11 +563,12 @@ function renderRecords() {
 function renderUnits() {
   const el = document.getElementById('unit-grid');
   el.innerHTML = UNITS.map(u => {
-    const paid = MONTHS.filter(m => state.payments[u][m]).length;
+    const p = state.payments[u] || {};
+    const paid = MONTHS.filter(m => p[m]).length;
     const allPaid = paid === 12;
-    const dots = MONTHS.map(m => `<div class="dot ${state.payments[u][m]?'paid':'unpaid'}"></div>`).join('');
+    const dots = MONTHS.map(m => `<div class="dot ${p[m]?'paid':'unpaid'}"></div>`).join('');
     return `
-      <div class="unit-card ${allPaid?'all-paid':paid>0?'':'has-unpaid'}" onclick="openUnitSheet('${u}')">
+      <div class="unit-card ${allPaid?'all-paid':paid===0?'has-unpaid':''}" onclick="openUnitSheet('${u}')">
         <div class="unit-name">${u}</div>
         <div class="unit-dots">${dots}</div>
         <div class="unit-status ${allPaid?'ok':paid===0?'bad':''}">${allPaid?'全繳清':paid===0?'未繳費':paid+'/12月'}</div>
@@ -457,8 +606,7 @@ function switchTab(tab) {
     document.getElementById('tab-'+t).style.display = t===tab ? '' : 'none';
   });
   currentTab = tab;
-  const fabArea = document.getElementById('fab-area');
-  fabArea.style.display = tab === 'units' ? 'none' : 'flex';
+  document.getElementById('fab-area').style.display = tab === 'units' ? 'none' : 'flex';
 }
 
 // ── SHEETS ─────────────────────────────────────────────
@@ -471,11 +619,9 @@ function openSheet(type) {
   }
   document.getElementById(type+'-overlay').classList.add('show');
 }
-
 function closeSheet(type) {
   document.getElementById(type+'-overlay').classList.remove('show');
 }
-
 function closeIfOutside(e, id) {
   if (e.target.id === id) closeSheet(id.replace('-overlay',''));
 }
@@ -488,29 +634,40 @@ function openUnitSheet(unit) {
   renderUnitMonths(unit);
   document.getElementById('unit-overlay').classList.add('show');
 }
-
 function renderUnitMonths(unit) {
   const grid = document.getElementById('unit-month-grid');
+  const p = state.payments[unit] || {};
   grid.innerHTML = MONTHS.map(m => `
-    <button class="month-btn ${state.payments[unit][m]?'paid':''}" onclick="toggleMonthConfirm('${unit}','${m}')">
-      ${m}${state.payments[unit][m]?'<br>✓':''}
+    <button class="month-btn ${p[m]?'paid':''}" onclick="toggleMonthConfirm('${unit}','${m}')">
+      ${m}${p[m]?'<br>✓':''}
     </button>
   `).join('');
 }
-
 function toggleMonthConfirm(unit, month) {
-  const isPaid = state.payments[unit][month];
+  const isPaid = state.payments[unit] && state.payments[unit][month];
   showConfirm(
     isPaid ? '取消繳費' : '確認繳費',
     `${unit} ${month}\n${isPaid ? '標記為【未繳】？' : '標記為【已繳】？'}`,
     () => {
+      if (!state.payments[unit]) state.payments[unit] = {};
       state.payments[unit][month] = !isPaid;
       saveState();
       renderUnitMonths(unit);
       render();
     },
-    isPaid ? true : false
+    isPaid
   );
+}
+
+// ── VERSION SHEET ──────────────────────────────────────
+function openVersionSheet() {
+  document.getElementById('version-overlay').classList.add('show');
+}
+function closeVersionSheet() {
+  document.getElementById('version-overlay').classList.remove('show');
+}
+function closeVersionIfOutside(e) {
+  if (e.target.id === 'version-overlay') closeVersionSheet();
 }
 
 // ── CONFIRM ────────────────────────────────────────────
@@ -527,16 +684,13 @@ function showConfirm(title, msg, cb, isDanger=false) {
 function confirmNo() { document.getElementById('confirm-overlay').classList.remove('show'); confirmCallback = null; }
 function confirmYes() { document.getElementById('confirm-overlay').classList.remove('show'); if(confirmCallback) confirmCallback(); confirmCallback = null; }
 
-// ── ADD RECORD ────────────────────────────────────────
+// ── ADD RECORD ─────────────────────────────────────────
 function confirmAdd(type) {
   const date = document.getElementById(type+'-date').value;
   const desc = document.getElementById(type+'-desc').value.trim();
   const cat = document.getElementById(type+'-cat').value;
   const amount = parseInt(document.getElementById(type+'-amount').value);
-  if (!date || !desc || !amount || amount <= 0) {
-    alert('請填寫完整資料');
-    return;
-  }
+  if (!date || !desc || !amount || amount <= 0) { alert('請填寫完整資料'); return; }
   const sign = type === 'income' ? '＋' : '－';
   showConfirm(
     type === 'income' ? '確認新增收入' : '確認新增支出',
@@ -558,7 +712,6 @@ function deleteRecord(id) {
   if (!r) return;
   showConfirm('確認刪除', `刪除此筆紀錄？\n${r.desc}\n${r.type==='income'?'＋':'－'} NT$ ${r.amount.toLocaleString()}`, () => {
     state.records = state.records.filter(x => x.id !== id);
-    // recalc balanceAfter
     let b = INIT_BALANCE;
     state.records.forEach(rec => {
       b += rec.type === 'income' ? rec.amount : -rec.amount;
@@ -569,12 +722,12 @@ function deleteRecord(id) {
   }, true);
 }
 
-// ── SERVICE WORKER ────────────────────────────────────
+// ── SERVICE WORKER ─────────────────────────────────────
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./sw.js').catch(()=>{});
 }
 
-// ── INIT ──────────────────────────────────────────────
+// ── INIT ───────────────────────────────────────────────
 render();
 </script>
 </body>
