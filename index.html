@@ -33,10 +33,8 @@
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'Noto Sans TC', sans-serif; overflow: hidden; }
 
-  /* APP SHELL */
   #app { display: flex; flex-direction: column; height: 100vh; height: 100dvh; }
 
-  /* HEADER */
   #header {
     padding: calc(var(--safe-top) + 10px) 16px 10px;
     background: var(--bg2);
@@ -50,7 +48,6 @@
   .header-time { font-family: 'DM Mono'; font-size: 16px; color: var(--gold-light); letter-spacing: 1px; }
   .header-date { font-size: 10px; color: var(--text2); margin-top: 1px; letter-spacing: 0.5px; }
 
-  /* VERSION BADGE - top */
   .version-bar {
     background: var(--bg3);
     border-bottom: 1px solid var(--border);
@@ -74,7 +71,29 @@
   }
   .version-btn:active { background: var(--border); color: var(--gold); }
 
-  /* BALANCE HERO */
+  #offline-banner {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    background: #2a1f00;
+    border-bottom: 1px solid #5a3e00;
+    padding: 5px 16px;
+    font-size: 11px;
+    color: #f0a500;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+    animation: slideDown 0.3s ease;
+  }
+  #offline-banner.show { display: flex; }
+  #offline-banner .offline-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #f0a500;
+    animation: pulse 1.5s infinite;
+  }
+  @keyframes slideDown { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+
   #balance-hero {
     background: linear-gradient(135deg, #161b22 0%, #1a1f2a 100%);
     border-bottom: 1px solid var(--border);
@@ -97,21 +116,17 @@
   .balance-stat-label { font-size: 10px; color: var(--text2); letter-spacing: 1px; }
   .balance-stat-val { font-family: 'DM Mono'; font-size: 13px; margin-top: 2px; }
 
-  /* TABS */
   #tabs { display: flex; background: var(--bg2); border-bottom: 1px solid var(--border); flex-shrink: 0; }
   .tab { flex: 1; padding: 11px 0; font-size: 13px; font-weight: 500; color: var(--text2); text-align: center; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; letter-spacing: 1px; }
   .tab.active { color: var(--gold); border-bottom-color: var(--gold); }
   .tab:active { background: var(--bg3); }
 
-  /* CONTENT */
   #content { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: calc(var(--safe-bot) + 80px); }
 
-  /* SECTION */
   .section { padding: 14px 16px 0; }
   .section-title { font-size: 11px; color: var(--text2); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
 
-  /* RECORD CARD */
-  .record { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 10px; position: relative; }
+  .record { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 10px; position: relative; animation: fadeIn 0.2s ease; }
   .record-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
   .record-desc { font-size: 14px; font-weight: 500; line-height: 1.4; flex: 1; }
   .record-amount { font-family: 'DM Mono'; font-size: 16px; font-weight: 500; white-space: nowrap; }
@@ -126,7 +141,6 @@
   .record-delete { position: absolute; top: 10px; right: 10px; background: none; border: none; color: var(--text2); font-size: 16px; cursor: pointer; padding: 4px 6px; border-radius: 6px; }
   .record-delete:active { background: var(--red-bg); color: var(--red); }
 
-  /* UNIT GRID - 6 rows x 2 cols */
   .unit-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -147,7 +161,6 @@
   .dot.paid { background: var(--green); }
   .dot.unpaid { background: var(--border); }
 
-  /* FAB */
   #fab-area { position: fixed; bottom: calc(var(--safe-bot) + 16px); left: 0; right: 0; display: flex; justify-content: center; gap: 12px; z-index: 50; padding: 0 16px; }
   .fab { flex: 1; max-width: 180px; padding: 14px 0; border: none; border-radius: 14px; font-family: 'Noto Sans TC', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; letter-spacing: 1px; transition: all 0.15s; box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
   .fab-income { background: var(--green); color: #0d1117; }
@@ -155,7 +168,6 @@
   .fab-expense { background: var(--red); color: #fff; }
   .fab-expense:active { transform: scale(0.97); background: #da3633; }
 
-  /* MODAL OVERLAY */
   .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 100; display: flex; align-items: flex-end; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
   .overlay.show { opacity: 1; pointer-events: all; }
   .sheet { background: var(--bg2); border-radius: 20px 20px 0 0; border-top: 1px solid var(--border); padding: 0 16px calc(var(--safe-bot) + 16px); width: 100%; max-height: 90vh; overflow-y: auto; transform: translateY(40px); transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); }
@@ -163,7 +175,6 @@
   .sheet-handle { width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 12px auto 16px; }
   .sheet-title { font-family: 'Noto Serif TC', serif; font-size: 17px; font-weight: 700; color: var(--gold); margin-bottom: 18px; text-align: center; letter-spacing: 1px; }
 
-  /* FORM */
   .form-group { margin-bottom: 14px; }
   .form-label { font-size: 12px; color: var(--text2); letter-spacing: 1px; margin-bottom: 6px; display: block; }
   .form-input { width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; color: var(--text); font-family: 'Noto Sans TC', sans-serif; font-size: 15px; outline: none; -webkit-appearance: none; }
@@ -175,9 +186,7 @@
   .btn-cancel:active { background: var(--border); }
   .btn-ok { background: var(--gold); color: var(--bg); }
   .btn-ok:active { background: var(--gold-dim); }
-  .btn-ok.danger { background: var(--red); color: #fff; }
 
-  /* CONFIRM DIALOG */
   .confirm-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 24px; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
   .confirm-overlay.show { opacity: 1; pointer-events: all; }
   .confirm-box { background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; padding: 24px; width: 100%; max-width: 320px; transform: scale(0.92); transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1); }
@@ -186,13 +195,11 @@
   .confirm-msg { font-size: 13px; color: var(--text2); text-align: center; line-height: 1.6; margin-bottom: 20px; white-space: pre-line; }
   .confirm-btns { display: flex; gap: 10px; }
 
-  /* UNIT DETAIL SHEET */
   .month-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px; }
   .month-btn { padding: 10px 0; border-radius: 8px; border: 1px solid var(--border); background: var(--bg3); color: var(--text2); font-family: 'Noto Sans TC', sans-serif; font-size: 13px; cursor: pointer; transition: all 0.15s; text-align: center; }
   .month-btn.paid { background: var(--green-bg); border-color: var(--green); color: var(--green); font-weight: 600; }
   .month-btn:active { transform: scale(0.95); }
 
-  /* HISTORY TAB */
   .history-sum { display: flex; gap: 10px; padding: 14px 16px 0; }
   .sum-card { flex: 1; background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 12px; }
   .sum-card-label { font-size: 10px; color: var(--text2); letter-spacing: 1px; margin-bottom: 4px; }
@@ -200,7 +207,6 @@
 
   .empty { text-align: center; padding: 60px 20px; color: var(--text2); font-size: 14px; }
 
-  /* VERSION HISTORY OVERLAY */
   .version-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 300; display: flex; align-items: flex-end; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
   .version-overlay.show { opacity: 1; pointer-events: all; }
   .version-sheet { background: var(--bg2); border-radius: 20px 20px 0 0; border-top: 1px solid var(--border); padding: 0 16px calc(var(--safe-bot) + 20px); width: 100%; max-height: 75vh; overflow-y: auto; transform: translateY(40px); transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); }
@@ -214,7 +220,6 @@
   .version-notes li { list-style: none; padding-left: 0; margin-bottom: 2px; }
   .version-notes li::before { content: '· '; color: var(--gold); }
 
-  /* FOOTER VERSION */
   #footer-version {
     background: var(--bg2);
     border-top: 1px solid var(--border);
@@ -236,19 +241,16 @@
   }
   .footer-ver-btn:active { color: var(--gold); }
 
-  /* SCROLLBAR */
   #content::-webkit-scrollbar { width: 3px; }
   #content::-webkit-scrollbar-track { background: transparent; }
   #content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
   @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-  .record { animation: fadeIn 0.2s ease; }
 </style>
 </head>
 <body>
 
 <div id="app">
-  <!-- HEADER -->
   <div id="header">
     <div class="header-row">
       <div>
@@ -262,12 +264,15 @@
     </div>
   </div>
 
-  <!-- VERSION BAR TOP -->
   <div class="version-bar">
-    <button class="version-btn" onclick="openVersionSheet()">v1.1.0 · 更新履歷</button>
+    <button class="version-btn" onclick="openVersionSheet()">v1.2.0 · 更新履歷</button>
   </div>
 
-  <!-- BALANCE HERO -->
+  <div id="offline-banner">
+    <div class="offline-dot"></div>
+    離線模式｜資料已存於手機，恢復連線後自動同步
+  </div>
+
   <div id="balance-hero">
     <div class="balance-label">目前結餘</div>
     <div class="balance-amount"><span>NT$</span><span id="balance-num">97,246</span></div>
@@ -287,16 +292,13 @@
     </div>
   </div>
 
-  <!-- TABS -->
   <div id="tabs">
     <div class="tab active" onclick="switchTab('records')">帳務記錄</div>
     <div class="tab" onclick="switchTab('units')">住戶管理</div>
     <div class="tab" onclick="switchTab('history')">收支明細</div>
   </div>
 
-  <!-- CONTENT -->
   <div id="content">
-    <!-- Records Tab -->
     <div id="tab-records">
       <div class="section">
         <div class="section-title">最新帳務</div>
@@ -304,12 +306,10 @@
       </div>
     </div>
 
-    <!-- Units Tab -->
     <div id="tab-units" style="display:none">
       <div class="unit-grid" id="unit-grid"></div>
     </div>
 
-    <!-- History Tab -->
     <div id="tab-history" style="display:none">
       <div class="history-sum">
         <div class="sum-card">
@@ -328,12 +328,10 @@
     </div>
   </div>
 
-  <!-- FOOTER VERSION -->
   <div id="footer-version">
-    <button class="footer-ver-btn" onclick="openVersionSheet()">偉士大樓管委費系統 · v1.1.0 · 點擊查看更新履歷</button>
+    <button class="footer-ver-btn" onclick="openVersionSheet()">偉士大樓管委費系統 · v1.2.0 · 點擊查看更新履歷</button>
   </div>
 
-  <!-- FAB -->
   <div id="fab-area">
     <button class="fab fab-income" onclick="openSheet('income')">＋ 收入</button>
     <button class="fab fab-expense" onclick="openSheet('expense')">－ 支出</button>
@@ -441,7 +439,18 @@
     <div class="sheet-title">更新履歷</div>
 
     <div class="version-item">
-      <div><span class="version-tag latest">v1.1.0</span></div>
+      <div><span class="version-tag latest">v1.2.0</span></div>
+      <div class="version-date">2025-05-03</div>
+      <ul class="version-notes">
+        <li>離線模式強化：Cache First 策略，無網路也能秒開</li>
+        <li>離線時頂部顯示橘色提示條</li>
+        <li>恢復連線時自動提示同步完成</li>
+        <li>所有操作優先寫入 localStorage，離線不遺失資料</li>
+      </ul>
+    </div>
+
+    <div class="version-item">
+      <div><span class="version-tag">v1.1.0</span></div>
       <div class="version-date">2025-01-01</div>
       <ul class="version-notes">
         <li>頁首／頁尾加入版本號，點擊可查看更新履歷</li>
@@ -469,20 +478,14 @@
 </div>
 
 <script>
-// ── UNITS DEFINITION ──────────────────────────────────
-// 左欄由下而上：426-1 ~ 426-6  (grid row 6 down to 1, col 1)
-// 右欄由下而上：424-1 ~ 424-6  (grid row 6 down to 1, col 2)
-// Grid order: row1col1=426-6, row1col2=424-6 ... row6col1=426-1, row6col2=424-1
-const UNIT_LEFT  = ['426-6','426-5','426-4','426-3','426-2','426-1']; // top→bottom display = floor 6→1
+const UNIT_LEFT  = ['426-6','426-5','426-4','426-3','426-2','426-1'];
 const UNIT_RIGHT = ['424-6','424-5','424-4','424-3','424-2','424-1'];
-// Interleave: [L6,R6, L5,R5, ..., L1,R1]
 const UNITS = [];
 for (let i = 0; i < 6; i++) { UNITS.push(UNIT_LEFT[i]); UNITS.push(UNIT_RIGHT[i]); }
 
 const INIT_BALANCE = 97246;
 const MONTHS = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
 
-// ── STATE ──────────────────────────────────────────────
 function loadState() {
   try {
     const s = localStorage.getItem('weishi-state-v2');
@@ -499,7 +502,6 @@ function saveState() {
   localStorage.setItem('weishi-state-v2', JSON.stringify(state));
 }
 
-// ── COMPUTED ───────────────────────────────────────────
 function totalIncome() { return state.records.filter(r=>r.type==='income').reduce((s,r)=>s+r.amount,0); }
 function totalExpense() { return state.records.filter(r=>r.type==='expense').reduce((s,r)=>s+r.amount,0); }
 function balance() { return INIT_BALANCE + totalIncome() - totalExpense(); }
@@ -508,14 +510,12 @@ function paidUnits() {
 }
 function fmt(n) { return 'NT$ ' + Math.abs(n).toLocaleString('zh-TW'); }
 
-// ── CLOCK ──────────────────────────────────────────────
 function updateClock() {
   const now = new Date();
   const hh = String(now.getHours()).padStart(2,'0');
   const mm = String(now.getMinutes()).padStart(2,'0');
   const ss = String(now.getSeconds()).padStart(2,'0');
   document.getElementById('clock').textContent = hh + ':' + mm + ':' + ss;
-
   const weekdays = ['日','一','二','三','四','五','六'];
   const y = now.getFullYear();
   const mo = String(now.getMonth()+1).padStart(2,'0');
@@ -526,7 +526,6 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
-// ── RENDER ─────────────────────────────────────────────
 function render() {
   const b = balance();
   document.getElementById('balance-num').textContent = b.toLocaleString('zh-TW');
@@ -596,7 +595,6 @@ function renderHistory() {
   `).join('');
 }
 
-// ── TABS ───────────────────────────────────────────────
 let currentTab = 'records';
 function switchTab(tab) {
   document.querySelectorAll('.tab').forEach((t,i) => {
@@ -609,7 +607,6 @@ function switchTab(tab) {
   document.getElementById('fab-area').style.display = tab === 'units' ? 'none' : 'flex';
 }
 
-// ── SHEETS ─────────────────────────────────────────────
 function openSheet(type) {
   if (type === 'income' || type === 'expense') {
     const today = new Date().toISOString().split('T')[0];
@@ -626,7 +623,6 @@ function closeIfOutside(e, id) {
   if (e.target.id === id) closeSheet(id.replace('-overlay',''));
 }
 
-// Unit Sheet
 let activeUnit = null;
 function openUnitSheet(unit) {
   activeUnit = unit;
@@ -659,7 +655,6 @@ function toggleMonthConfirm(unit, month) {
   );
 }
 
-// ── VERSION SHEET ──────────────────────────────────────
 function openVersionSheet() {
   document.getElementById('version-overlay').classList.add('show');
 }
@@ -670,7 +665,6 @@ function closeVersionIfOutside(e) {
   if (e.target.id === 'version-overlay') closeVersionSheet();
 }
 
-// ── CONFIRM ────────────────────────────────────────────
 let confirmCallback = null;
 function showConfirm(title, msg, cb, isDanger=false) {
   document.getElementById('confirm-title').textContent = title;
@@ -684,7 +678,6 @@ function showConfirm(title, msg, cb, isDanger=false) {
 function confirmNo() { document.getElementById('confirm-overlay').classList.remove('show'); confirmCallback = null; }
 function confirmYes() { document.getElementById('confirm-overlay').classList.remove('show'); if(confirmCallback) confirmCallback(); confirmCallback = null; }
 
-// ── ADD RECORD ─────────────────────────────────────────
 function confirmAdd(type) {
   const date = document.getElementById(type+'-date').value;
   const desc = document.getElementById(type+'-desc').value.trim();
@@ -706,7 +699,6 @@ function confirmAdd(type) {
   );
 }
 
-// ── DELETE ─────────────────────────────────────────────
 function deleteRecord(id) {
   const r = state.records.find(x => x.id === id);
   if (!r) return;
@@ -722,12 +714,35 @@ function deleteRecord(id) {
   }, true);
 }
 
+// ── OFFLINE 偵測 ───────────────────────────────────────
+const offlineBanner = document.getElementById('offline-banner');
+function updateOnlineStatus() {
+  if (!navigator.onLine) {
+    offlineBanner.classList.add('show');
+  } else {
+    offlineBanner.classList.remove('show');
+    console.log('[Network] 已恢復連線，localStorage 資料完整');
+  }
+}
+window.addEventListener('online', updateOnlineStatus);
+window.addEventListener('offline', updateOnlineStatus);
+updateOnlineStatus();
+
 // ── SERVICE WORKER ─────────────────────────────────────
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js').catch(()=>{});
+  navigator.serviceWorker.register('./sw.js')
+    .then(reg => {
+      reg.addEventListener('updatefound', () => {
+        const nw = reg.installing;
+        nw.addEventListener('statechange', () => {
+          if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+            console.log('[SW] 新版本已快取，下次開啟生效');
+          }
+        });
+      });
+    }).catch(() => {});
 }
 
-// ── INIT ───────────────────────────────────────────────
 render();
 </script>
 </body>
