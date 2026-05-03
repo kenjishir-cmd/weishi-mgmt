@@ -24,8 +24,6 @@
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
   html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-serif;overflow:hidden}
   #app{display:flex;flex-direction:column;height:100vh;height:100dvh}
-
-  /* HEADER */
   #header{padding:calc(var(--safe-top) + 10px) 16px 10px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0}
   .header-row{display:flex;align-items:center;justify-content:space-between}
   .header-title{font-family:'Noto Serif TC',serif;font-size:18px;font-weight:700;color:var(--gold);letter-spacing:2px}
@@ -33,19 +31,13 @@
   .header-datetime{text-align:right}
   .header-time{font-family:'DM Mono';font-size:16px;color:var(--gold-light);letter-spacing:1px}
   .header-date{font-size:10px;color:var(--text2);margin-top:1px}
-
-  /* VERSION BAR */
   .version-bar{background:var(--bg3);border-bottom:1px solid var(--border);padding:4px 16px;display:flex;align-items:center;justify-content:flex-end;flex-shrink:0}
   .version-btn{background:none;border:1px solid var(--border);border-radius:6px;color:var(--text2);font-family:'DM Mono';font-size:10px;padding:3px 8px;cursor:pointer;letter-spacing:.5px;transition:all .15s}
   .version-btn:active{background:var(--border);color:var(--gold)}
-
-  /* OFFLINE */
   #offline-banner{display:none;align-items:center;justify-content:center;gap:6px;background:#2a1f00;border-bottom:1px solid #5a3e00;padding:5px 16px;font-size:11px;color:#f0a500;flex-shrink:0}
   #offline-banner.show{display:flex}
   .offline-dot{width:6px;height:6px;border-radius:50%;background:#f0a500;animation:pulse 1.5s infinite}
   @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-
-  /* BALANCE */
   #balance-hero{background:linear-gradient(135deg,#161b22 0%,#1a1f2a 100%);border-bottom:1px solid var(--border);padding:16px 16px 14px;flex-shrink:0;position:relative;overflow:hidden}
   #balance-hero::before{content:'¥';position:absolute;right:-10px;top:-20px;font-family:'DM Mono';font-size:120px;color:var(--gold);opacity:.04;pointer-events:none}
   .balance-label{font-size:11px;color:var(--text2);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px}
@@ -55,20 +47,16 @@
   .balance-stat{flex:1}
   .balance-stat-label{font-size:10px;color:var(--text2);letter-spacing:1px}
   .balance-stat-val{font-family:'DM Mono';font-size:13px;margin-top:2px}
-
-  /* TABS */
   #tabs{display:flex;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0}
   .tab{flex:1;padding:11px 0;font-size:13px;font-weight:500;color:var(--text2);text-align:center;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;letter-spacing:1px}
   .tab.active{color:var(--gold);border-bottom-color:var(--gold)}
   .tab:active{background:var(--bg3)}
-
-  /* CONTENT */
   #content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(var(--safe-bot) + 124px)}
-
+  #content::-webkit-scrollbar{width:3px}
+  #content::-webkit-scrollbar-track{background:transparent}
+  #content::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
   .section{padding:14px 16px 0}
   .section-title{font-size:11px;color:var(--text2);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
-
-  /* RECORD CARD */
   .record{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 14px 10px;margin-bottom:10px;animation:fadeIn .2s ease}
   @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
   .record-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
@@ -86,8 +74,6 @@
   .rec-btn{flex:1;padding:8px 0;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);font-family:'Noto Sans TC',sans-serif;font-size:12px;cursor:pointer;transition:all .15s;letter-spacing:.5px}
   .rec-btn.edit:active{background:var(--blue-bg);color:var(--blue);border-color:var(--blue)}
   .rec-btn.del:active{background:var(--red-bg);color:var(--red);border-color:var(--red)}
-
-  /* UNIT GRID */
   .unit-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:14px 16px 0}
   .unit-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 8px;text-align:center;cursor:pointer;transition:all .15s}
   .unit-card:active{transform:scale(.96)}
@@ -101,29 +87,21 @@
   .dot{width:7px;height:7px;border-radius:2px}
   .dot.paid{background:var(--green)}
   .dot.unpaid{background:var(--border)}
-
-  /* FOOTER */
   #footer-version{background:var(--bg2);border-top:1px solid var(--border);padding:5px 16px calc(var(--safe-bot) + 5px);display:flex;align-items:center;justify-content:center;flex-shrink:0}
   .footer-ver-btn{background:none;border:none;color:var(--text2);font-family:'DM Mono';font-size:10px;cursor:pointer;letter-spacing:.5px;padding:2px 8px}
   .footer-ver-btn:active{color:var(--gold)}
-
-  /* FAB */
   #fab-area{position:fixed;left:0;right:0;bottom:calc(var(--safe-bot) + 38px);display:flex;justify-content:center;gap:12px;z-index:50;padding:0 16px}
   .fab{flex:1;max-width:180px;padding:14px 0;border:none;border-radius:14px;font-family:'Noto Sans TC',sans-serif;font-size:14px;font-weight:600;cursor:pointer;letter-spacing:1px;transition:all .15s;box-shadow:0 4px 24px rgba(0,0,0,.55)}
   .fab-income{background:var(--green);color:#0d1117}
   .fab-income:active{transform:scale(.97);background:#2ea043}
   .fab-expense{background:var(--red);color:#fff}
   .fab-expense:active{transform:scale(.97);background:#da3633}
-
-  /* OVERLAY / SHEET */
   .overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:100;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .25s}
   .overlay.show{opacity:1;pointer-events:all}
   .sheet{background:var(--bg2);border-radius:20px 20px 0 0;border-top:1px solid var(--border);padding:0 16px calc(var(--safe-bot) + 16px);width:100%;max-height:90vh;overflow-y:auto;transform:translateY(40px);transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
   .overlay.show .sheet{transform:translateY(0)}
   .sheet-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:12px auto 16px}
   .sheet-title{font-family:'Noto Serif TC',serif;font-size:17px;font-weight:700;color:var(--gold);margin-bottom:18px;text-align:center;letter-spacing:1px}
-
-  /* FORM */
   .form-group{margin-bottom:14px}
   .form-label{font-size:12px;color:var(--text2);letter-spacing:1px;margin-bottom:6px;display:block}
   .form-input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-family:'Noto Sans TC',sans-serif;font-size:15px;outline:none;-webkit-appearance:none}
@@ -135,8 +113,6 @@
   .btn-cancel:active{background:var(--border)}
   .btn-ok{background:var(--gold);color:var(--bg)}
   .btn-ok:active{background:var(--gold-dim)}
-
-  /* CONFIRM */
   .confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:opacity .2s}
   .confirm-overlay.show{opacity:1;pointer-events:all}
   .confirm-box{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:24px;width:100%;max-width:320px;transform:scale(.92);transition:transform .25s cubic-bezier(.34,1.56,.64,1)}
@@ -144,22 +120,15 @@
   .confirm-title{font-family:'Noto Serif TC',serif;font-size:16px;font-weight:700;color:var(--gold);text-align:center;margin-bottom:8px}
   .confirm-msg{font-size:13px;color:var(--text2);text-align:center;line-height:1.6;margin-bottom:20px;white-space:pre-line}
   .confirm-btns{display:flex;gap:10px}
-
-  /* UNIT MONTH */
   .month-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
-  .month-btn{padding:10px 4px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);font-family:'Noto Sans TC',sans-serif;font-size:12px;cursor:pointer;transition:all .15s;text-align:center;line-height:1.5}
+  .month-btn{padding:10px 4px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);font-family:'Noto Sans TC',sans-serif;font-size:12px;cursor:pointer;transition:all .15s;text-align:center;line-height:1.8}
   .month-btn.paid{background:var(--green-bg);border-color:var(--green);color:var(--green);font-weight:600}
   .month-btn:active{transform:scale(.95)}
-  .month-paid-date{font-size:9px;display:block;color:var(--green);font-family:'DM Mono';margin-top:1px}
-
-  /* HISTORY */
   .history-sum{display:flex;gap:10px;padding:14px 16px 0}
   .sum-card{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px}
   .sum-card-label{font-size:10px;color:var(--text2);letter-spacing:1px;margin-bottom:4px}
   .sum-card-val{font-family:'DM Mono';font-size:16px;font-weight:500}
   .empty{text-align:center;padding:60px 20px;color:var(--text2);font-size:14px}
-
-  /* VERSION OVERLAY */
   .version-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:300;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .25s}
   .version-overlay.show{opacity:1;pointer-events:all}
   .version-sheet{background:var(--bg2);border-radius:20px 20px 0 0;border-top:1px solid var(--border);padding:0 16px calc(var(--safe-bot) + 20px);width:100%;max-height:75vh;overflow-y:auto;transform:translateY(40px);transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
@@ -172,15 +141,10 @@
   .version-notes{font-size:12px;color:var(--text);line-height:1.7}
   .version-notes li{list-style:none;padding-left:0;margin-bottom:2px}
   .version-notes li::before{content:'· ';color:var(--gold)}
-
-  #content::-webkit-scrollbar{width:3px}
-  #content::-webkit-scrollbar-track{background:transparent}
-  #content::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
 </style>
 </head>
 <body>
 <div id="app">
-
   <div id="header">
     <div class="header-row">
       <div>
@@ -235,11 +199,9 @@
         <div id="records-list"></div>
       </div>
     </div>
-
     <div id="tab-units" style="display:none">
       <div class="unit-grid" id="unit-grid"></div>
     </div>
-
     <div id="tab-history" style="display:none">
       <div class="history-sum">
         <div class="sum-card">
@@ -343,7 +305,7 @@
 <div class="overlay" id="unit-overlay" onclick="closeIfOutside(event,'unit-overlay')">
   <div class="sheet">
     <div class="sheet-handle"></div>
-    <div class="sheet-title" id="unit-sheet-title">X戶 繳費狀況</div>
+    <div class="sheet-title" id="unit-sheet-title">繳費狀況</div>
     <div class="section-title" style="margin-bottom:12px">點擊月份切換繳費狀態</div>
     <div class="month-grid" id="unit-month-grid"></div>
     <button class="btn btn-cancel" style="width:100%;margin-top:8px" onclick="closeSheet('unit')">關閉</button>
@@ -367,75 +329,62 @@
   <div class="version-sheet">
     <div class="sheet-handle"></div>
     <div class="sheet-title">更新履歷</div>
-
     <div class="version-item">
       <div><span class="version-tag latest">v1.5.0</span></div>
       <div class="version-date">2026-05-03</div>
       <ul class="version-notes">
         <li>住戶繳費改為直接點月份確認／取消，移除日期選擇器</li>
         <li>解決 Android 無法限制日期範圍的問題</li>
-        <li>月份格只顯示 ✓ 已繳 或 未繳，簡單清楚</li>
+        <li>月份格只顯示 ✓ 已繳 或 － 未繳，簡單清楚</li>
       </ul>
     </div>
-
     <div class="version-item">
       <div><span class="version-tag">v1.4.0</span></div>
       <div class="version-date">2026-05-03</div>
       <ul class="version-notes">
         <li>修正 PWA App 無法自動同步最新版本的問題</li>
-        <li>Service Worker 升級至 weishi-v4，安裝後自動清除舊快取</li>
-        <li>新版 SW 安裝完成後，App 自動重新載入取得最新頁面</li>
-        <li>離線模式持續運作，資料不遺失</li>
+        <li>Service Worker 改為 Network First 策略</li>
+        <li>之後只需更新 index.html，sw.js 不需再動</li>
       </ul>
     </div>
-
     <div class="version-item">
       <div><span class="version-tag">v1.3.0</span></div>
       <div class="version-date">2026-05-03</div>
       <ul class="version-notes">
         <li>帳務記錄新增【編輯】與【刪除】按鈕，含確認對話框</li>
-        <li>住戶繳費月份點擊後可選擇實際繳費日期，日期顯示於月份格內</li>
+        <li>住戶繳費月份點擊後可選擇實際繳費日期</li>
         <li>修正 FAB 按鈕遮擋底部版本列問題</li>
       </ul>
     </div>
-
     <div class="version-item">
       <div><span class="version-tag">v1.2.0</span></div>
       <div class="version-date">2025-05-03</div>
       <ul class="version-notes">
         <li>離線模式強化：Cache First 策略，無網路也能秒開</li>
         <li>離線時頂部顯示橘色提示條</li>
-        <li>所有操作優先寫入 localStorage，離線不遺失資料</li>
       </ul>
     </div>
-
     <div class="version-item">
       <div><span class="version-tag">v1.1.0</span></div>
       <div class="version-date">2025-01-01</div>
       <ul class="version-notes">
-        <li>頁首／頁尾加入版本號，點擊可查看更新履歷</li>
         <li>頁首加入即時日期時間顯示</li>
-        <li>住戶管理改為 6行×2列，426 / 424 兩棟</li>
+        <li>住戶管理改為 426 / 424 兩棟</li>
       </ul>
     </div>
-
     <div class="version-item">
       <div><span class="version-tag">v1.0.0</span></div>
       <div class="version-date">2024-12-01</div>
       <ul class="version-notes">
-        <li>系統初版上線</li>
-        <li>帳務記錄、住戶管理、收支明細三大功能</li>
-        <li>期初結餘 NT$ 97,246</li>
+        <li>系統初版上線，期初結餘 NT$ 97,246</li>
         <li>PWA 安裝支援（iOS / Android）</li>
       </ul>
     </div>
-
     <button class="btn btn-cancel" style="width:100%;margin-top:8px" onclick="closeVersionSheet()">關閉</button>
   </div>
 </div>
 
 <script>
-// ── CONSTANTS ─────────────────────────────────────────
 const UNIT_LEFT  = ['426-6','426-5','426-4','426-3','426-2','426-1'];
 const UNIT_RIGHT = ['424-6','424-5','424-4','424-3','424-2','424-1'];
 const UNITS = [];
@@ -443,7 +392,6 @@ for (let i = 0; i < 6; i++) { UNITS.push(UNIT_LEFT[i]); UNITS.push(UNIT_RIGHT[i]
 const INIT_BALANCE = 97246;
 const MONTHS = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
 
-// ── STATE ─────────────────────────────────────────────
 function loadState() {
   try {
     const s = localStorage.getItem('weishi-state-v2');
@@ -455,7 +403,7 @@ function loadState() {
 }
 let state = loadState();
 
-// 舊資料 true/false → string/null migration
+// 舊資料 migration
 UNITS.forEach(u => {
   if (!state.payments[u]) state.payments[u] = {};
   MONTHS.forEach(m => {
@@ -466,14 +414,12 @@ UNITS.forEach(u => {
 
 function saveState() { localStorage.setItem('weishi-state-v2', JSON.stringify(state)); }
 
-// ── COMPUTED ──────────────────────────────────────────
 function totalIncome()  { return state.records.filter(r=>r.type==='income').reduce((s,r)=>s+r.amount,0); }
 function totalExpense() { return state.records.filter(r=>r.type==='expense').reduce((s,r)=>s+r.amount,0); }
 function balance()      { return INIT_BALANCE + totalIncome() - totalExpense(); }
 function paidUnits()    { return UNITS.filter(u => MONTHS.some(m => state.payments[u] && state.payments[u][m])).length; }
 function fmt(n)         { return 'NT$ ' + Math.abs(n).toLocaleString('zh-TW'); }
 
-// ── CLOCK ─────────────────────────────────────────────
 function updateClock() {
   const now = new Date();
   const hh = String(now.getHours()).padStart(2,'0');
@@ -487,7 +433,6 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
-// ── RENDER ────────────────────────────────────────────
 function render() {
   const b = balance();
   document.getElementById('balance-num').textContent = b.toLocaleString('zh-TW');
@@ -503,11 +448,8 @@ function render() {
 
 function renderRecords() {
   const el = document.getElementById('records-list');
-  const records = [...state.records].reverse().slice(0, 30);
-  if (!records.length) {
-    el.innerHTML = '<div class="empty">尚無帳務記錄<br><small>點下方按鈕新增收支</small></div>';
-    return;
-  }
+  const records = [...state.records].reverse().slice(0,30);
+  if (!records.length) { el.innerHTML = '<div class="empty">尚無帳務記錄<br><small>點下方按鈕新增收支</small></div>'; return; }
   el.innerHTML = records.map(r => `
     <div class="record">
       <div class="record-top">
@@ -523,8 +465,7 @@ function renderRecords() {
         <button class="rec-btn edit" onclick="editRecord(${r.id})">✎ 編輯</button>
         <button class="rec-btn del"  onclick="deleteRecord(${r.id})">✕ 刪除</button>
       </div>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
 function renderUnits() {
@@ -534,14 +475,11 @@ function renderUnits() {
     const paid = MONTHS.filter(m => p[m]).length;
     const allPaid = paid === 12;
     const dots = MONTHS.map(m => `<div class="dot ${p[m]?'paid':'unpaid'}"></div>`).join('');
-    return `
-      <div class="unit-card ${allPaid?'all-paid':paid===0?'has-unpaid':''}" onclick="openUnitSheet('${u}')">
-        <div class="unit-name">${u}</div>
-        <div class="unit-dots">${dots}</div>
-        <div class="unit-status ${allPaid?'ok':paid===0?'bad':''}">
-          ${allPaid?'全繳清':paid===0?'未繳費':paid+'/12月'}
-        </div>
-      </div>`;
+    return `<div class="unit-card ${allPaid?'all-paid':paid===0?'has-unpaid':''}" onclick="openUnitSheet('${u}')">
+      <div class="unit-name">${u}</div>
+      <div class="unit-dots">${dots}</div>
+      <div class="unit-status ${allPaid?'ok':paid===0?'bad':''}">${allPaid?'全繳清':paid===0?'未繳費':paid+'/12月'}</div>
+    </div>`;
   }).join('');
 }
 
@@ -560,11 +498,9 @@ function renderHistory() {
         <span class="record-badge badge-${r.type}">${r.cat}</span>
       </div>
       <div class="record-balance">結餘：NT$ ${r.balanceAfter.toLocaleString()}</div>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
-// ── TABS ──────────────────────────────────────────────
 function switchTab(tab) {
   document.querySelectorAll('.tab').forEach((t,i) => {
     t.classList.toggle('active', ['records','units','history'][i] === tab);
@@ -575,9 +511,7 @@ function switchTab(tab) {
   document.getElementById('fab-area').style.display = tab === 'units' ? 'none' : 'flex';
 }
 
-// ── SHEETS ────────────────────────────────────────────
 let editingId = null;
-
 function openSheet(type, record) {
   editingId = record ? record.id : null;
   const today = new Date().toISOString().split('T')[0];
@@ -601,13 +535,11 @@ function openSheet(type, record) {
 function closeSheet(type) { document.getElementById(type+'-overlay').classList.remove('show'); }
 function closeIfOutside(e, id) { if (e.target.id === id) closeSheet(id.replace('-overlay','')); }
 
-// ── EDIT ──────────────────────────────────────────────
 function editRecord(id) {
   const r = state.records.find(x => x.id === id);
   if (r) openSheet(r.type, r);
 }
 
-// ── SUBMIT ────────────────────────────────────────────
 function submitRecord(type) {
   const date   = document.getElementById(type+'-date').value;
   const desc   = document.getElementById(type+'-desc').value.trim();
@@ -622,42 +554,29 @@ function submitRecord(type) {
     () => {
       if (isEdit) {
         const r = state.records.find(x => x.id === editingId);
-        if (r) { r.date = date; r.desc = desc; r.cat = cat; r.amount = amount; r.type = type; }
+        if (r) { r.date=date; r.desc=desc; r.cat=cat; r.amount=amount; r.type=type; }
       } else {
-        state.records.push({ id: state.nextId++, type, date, desc, cat, amount, balanceAfter: 0 });
+        state.records.push({ id:state.nextId++, type, date, desc, cat, amount, balanceAfter:0 });
       }
-      // recalc balanceAfter
       let b = INIT_BALANCE;
-      state.records.forEach(rec => {
-        b += rec.type === 'income' ? rec.amount : -rec.amount;
-        rec.balanceAfter = b;
-      });
-      saveState();
-      closeSheet(type);
-      render();
-    },
-    type === 'expense'
+      state.records.forEach(rec => { b += rec.type==='income' ? rec.amount : -rec.amount; rec.balanceAfter = b; });
+      saveState(); closeSheet(type); render();
+    }, type === 'expense'
   );
 }
 
-// ── DELETE ────────────────────────────────────────────
 function deleteRecord(id) {
   const r = state.records.find(x => x.id === id);
   if (!r) return;
-  showConfirm('確認刪除',
-    `刪除此筆紀錄？\n${r.desc}\n${r.type==='income'?'＋':'－'} NT$ ${r.amount.toLocaleString()}`,
+  showConfirm('確認刪除', `刪除此筆紀錄？\n${r.desc}\n${r.type==='income'?'＋':'－'} NT$ ${r.amount.toLocaleString()}`,
     () => {
       state.records = state.records.filter(x => x.id !== id);
       let b = INIT_BALANCE;
-      state.records.forEach(rec => {
-        b += rec.type === 'income' ? rec.amount : -rec.amount;
-        rec.balanceAfter = b;
-      });
+      state.records.forEach(rec => { b += rec.type==='income' ? rec.amount : -rec.amount; rec.balanceAfter = b; });
       saveState(); render();
     }, true);
 }
 
-// ── UNIT SHEET ────────────────────────────────────────
 let activeUnit = null;
 function openUnitSheet(unit) {
   activeUnit = unit;
@@ -665,6 +584,7 @@ function openUnitSheet(unit) {
   renderUnitMonths(unit);
   document.getElementById('unit-overlay').classList.add('show');
 }
+
 function renderUnitMonths(unit) {
   const p = state.payments[unit] || {};
   document.getElementById('unit-month-grid').innerHTML = MONTHS.map(m => {
@@ -675,67 +595,40 @@ function renderUnitMonths(unit) {
   }).join('');
 }
 
-// ── MONTH TOGGLE（直接確認，無日期選擇）────────────────
 function toggleMonth(unit, month) {
   const isPaid = !!state.payments[unit][month];
   if (isPaid) {
-    // 已繳 → 確認取消
-    showConfirm(
-      '取消繳費',
-      `${unit}　${month}\n標記為【未繳】？`,
-      () => {
-        state.payments[unit][month] = null;
-        saveState();
-        renderUnitMonths(unit);
-        render();
-      },
-      true
-    );
+    showConfirm('取消繳費', `${unit}　${month}\n標記為【未繳】？`,
+      () => { state.payments[unit][month] = null; saveState(); renderUnitMonths(unit); render(); }, true);
   } else {
-    // 未繳 → 確認已繳
-    showConfirm(
-      '確認已繳費',
-      `${unit}　${month}\n標記為【已繳】？`,
-      () => {
-        state.payments[unit][month] = '已繳';
-        saveState();
-        renderUnitMonths(unit);
-        render();
-      },
-      false
-    );
+    showConfirm('確認已繳費', `${unit}　${month}\n標記為【已繳】？`,
+      () => { state.payments[unit][month] = '已繳'; saveState(); renderUnitMonths(unit); render(); }, false);
   }
 }
 
-// ── VERSION ───────────────────────────────────────────
 function openVersionSheet()       { document.getElementById('version-overlay').classList.add('show'); }
 function closeVersionSheet()      { document.getElementById('version-overlay').classList.remove('show'); }
 function closeVersionIfOutside(e) { if (e.target.id === 'version-overlay') closeVersionSheet(); }
 
-// ── CONFIRM ───────────────────────────────────────────
 let confirmCallback = null;
 function showConfirm(title, msg, cb, isDanger=false) {
   document.getElementById('confirm-title').textContent = title;
   document.getElementById('confirm-msg').textContent   = msg;
   const btn = document.getElementById('confirm-yes-btn');
   btn.style.background = isDanger ? 'var(--red)' : 'var(--gold)';
-  btn.style.color      = isDanger ? '#fff'        : 'var(--bg)';
+  btn.style.color      = isDanger ? '#fff' : 'var(--bg)';
   confirmCallback = cb;
   document.getElementById('confirm-overlay').classList.add('show');
 }
 function confirmNo()  { document.getElementById('confirm-overlay').classList.remove('show'); confirmCallback = null; }
 function confirmYes() { document.getElementById('confirm-overlay').classList.remove('show'); if (confirmCallback) confirmCallback(); confirmCallback = null; }
 
-// ── OFFLINE ───────────────────────────────────────────
 const offlineBanner = document.getElementById('offline-banner');
-function updateOnlineStatus() {
-  offlineBanner.classList.toggle('show', !navigator.onLine);
-}
+function updateOnlineStatus() { offlineBanner.classList.toggle('show', !navigator.onLine); }
 window.addEventListener('online',  updateOnlineStatus);
 window.addEventListener('offline', updateOnlineStatus);
 updateOnlineStatus();
 
-// ── SERVICE WORKER ────────────────────────────────────
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./sw.js').catch(() => {});
 }
