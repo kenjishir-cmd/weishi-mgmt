@@ -102,12 +102,12 @@
   .dot.paid{background:var(--green)}
   .dot.unpaid{background:var(--border)}
 
-  /* FOOTER — 在 flex 流程裡，不 fixed */
+  /* FOOTER */
   #footer-version{background:var(--bg2);border-top:1px solid var(--border);padding:5px 16px calc(var(--safe-bot) + 5px);display:flex;align-items:center;justify-content:center;flex-shrink:0}
   .footer-ver-btn{background:none;border:none;color:var(--text2);font-family:'DM Mono';font-size:10px;cursor:pointer;letter-spacing:.5px;padding:2px 8px}
   .footer-ver-btn:active{color:var(--gold)}
 
-  /* FAB — fixed，bottom 剛好在 footer 上方 */
+  /* FAB */
   #fab-area{position:fixed;left:0;right:0;bottom:calc(var(--safe-bot) + 38px);display:flex;justify-content:center;gap:12px;z-index:50;padding:0 16px}
   .fab{flex:1;max-width:180px;padding:14px 0;border:none;border-radius:14px;font-family:'Noto Sans TC',sans-serif;font-size:14px;font-weight:600;cursor:pointer;letter-spacing:1px;transition:all .15s;box-shadow:0 4px 24px rgba(0,0,0,.55)}
   .fab-income{background:var(--green);color:#0d1117}
@@ -195,7 +195,7 @@
   </div>
 
   <div class="version-bar">
-    <button class="version-btn" onclick="openVersionSheet()">v1.3.0 · 更新履歷</button>
+    <button class="version-btn" onclick="openVersionSheet()">v1.4.0 · 更新履歷</button>
   </div>
 
   <div id="offline-banner">
@@ -259,7 +259,7 @@
   </div>
 
   <div id="footer-version">
-    <button class="footer-ver-btn" onclick="openVersionSheet()">偉士大樓管委費系統 · v1.3.0 · 點擊查看更新履歷</button>
+    <button class="footer-ver-btn" onclick="openVersionSheet()">偉士大樓管委費系統 · v1.4.0 · 點擊查看更新履歷</button>
   </div>
 
   <div id="fab-area">
@@ -386,7 +386,18 @@
     <div class="sheet-title">更新履歷</div>
 
     <div class="version-item">
-      <div><span class="version-tag latest">v1.3.0</span></div>
+      <div><span class="version-tag latest">v1.4.0</span></div>
+      <div class="version-date">2026-05-03</div>
+      <ul class="version-notes">
+        <li>修正 PWA App 無法自動同步最新版本的問題</li>
+        <li>Service Worker 升級至 weishi-v4，安裝後自動清除舊快取</li>
+        <li>新版 SW 安裝完成後，App 自動重新載入取得最新頁面</li>
+        <li>離線模式持續運作，資料不遺失</li>
+      </ul>
+    </div>
+
+    <div class="version-item">
+      <div><span class="version-tag">v1.3.0</span></div>
       <div class="version-date">2026-05-03</div>
       <ul class="version-notes">
         <li>帳務記錄新增【編輯】與【刪除】按鈕，含確認對話框</li>
@@ -690,11 +701,17 @@ function openMonthPick(unit, month) {
 function confirmMonthPick() {
   const d = document.getElementById('monthpick-date').value;
   if (!d) { alert('請選擇日期'); return; }
-  state.payments[pickUnit][pickMonth] = d;
-  saveState();
-  document.getElementById('monthpick-overlay').classList.remove('show');
-  openUnitSheet(pickUnit);
-  render();
+  showConfirm(
+    '確認已繳費',
+    `${pickUnit} ${pickMonth}\n繳費日期：${d}`,
+    () => {
+      state.payments[pickUnit][pickMonth] = d;
+      saveState();
+      document.getElementById('monthpick-overlay').classList.remove('show');
+      openUnitSheet(pickUnit);
+      render();
+    }
+  );
 }
 function cancelMonthPick() {
   showConfirm('取消繳費', `${pickUnit} ${pickMonth}\n標記為【未繳】？`, () => {
@@ -734,9 +751,25 @@ window.addEventListener('online',  updateOnlineStatus);
 window.addEventListener('offline', updateOnlineStatus);
 updateOnlineStatus();
 
-// ── SERVICE WORKER ────────────────────────────────────
+// ── SERVICE WORKER（含自動更新）────────────────────────
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js').catch(()=>{});
+  navigator.serviceWorker.register('./sw.js').then(reg => {
+    // 偵測到新版 SW 安裝中 → 完成後送 SKIP_WAITING
+    reg.addEventListener('updatefound', () => {
+      const newWorker = reg.installing;
+      newWorker.addEventListener('statechange', () => {
+        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+          newWorker.postMessage('SKIP_WAITING');
+        }
+      });
+    });
+  }).catch(() => {});
+
+  // SW 接管後自動重新載入，確保拿到最新頁面
+  let refreshing = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!refreshing) { refreshing = true; window.location.reload(); }
+  });
 }
 
 render();
