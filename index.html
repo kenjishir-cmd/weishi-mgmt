@@ -29,8 +29,6 @@
   #header{padding:calc(var(--safe-top) + 10px) 16px 10px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0}
   .header-row{display:flex;align-items:flex-start;justify-content:space-between}
   .header-title{font-family:'Noto Serif TC',serif;font-size:18px;font-weight:700;color:var(--gold);letter-spacing:2px}
-  
-  /* 年份切換器樣式 */
   .year-select { background: var(--bg3); border: 1px solid var(--gold-dim); color: var(--gold-light); border-radius: 6px; padding: 2px 8px; font-family: 'DM Mono'; font-size: 14px; outline: none; margin-top: 4px; cursor: pointer; }
 
   .header-datetime{text-align:right}
@@ -57,7 +55,7 @@
 
   #content{flex:1;overflow-y:auto;padding-bottom:calc(var(--safe-bot) + 140px)}
   .section{padding:14px 16px 0}
-  .section-title{font-size:11px;color:var(--text2);letter-spacing:2px;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border); display: flex; justify-content: space-between;}
+  .section-title{font-size:11px;color:var(--text2);letter-spacing:2px;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
 
   .unpaid-alert-box { background: var(--red-bg); border: 1px solid var(--red); border-radius: 10px; padding: 12px; margin: 0 16px 12px; }
   .unpaid-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
@@ -65,7 +63,6 @@
 
   .record{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px}
   .record-top{display:flex;justify-content:space-between}
-  .record-desc{font-size:14px;font-weight:500;flex:1}
   .record-amount.income{color:var(--green)}
   .record-amount.expense{color:var(--red)}
 
@@ -104,7 +101,6 @@
           <option value="2025">2025 年</option>
           <option value="2026" selected>2026 年</option>
           <option value="2027">2027 年</option>
-          <option value="2028">2028 年</option>
         </select>
       </div>
       <div class="header-datetime">
@@ -118,12 +114,12 @@
   </div>
 
   <div class="version-bar">
-    <button class="version-btn" onclick="openSheet('version')">v2.1.0 · 多年份更新</button>
+    <button class="version-btn" onclick="openSheet('version')">v2.2.0 · 經典跨年版</button>
     <button class="share-btn" onclick="shareStatus()">📤 分享報表</button>
   </div>
 
   <div id="balance-hero">
-    <div class="balance-label">目前總結餘 (含跨年累計)</div>
+    <div class="balance-label">系統總結餘 (含跨年累計)</div>
     <div class="balance-amount"><span>NT$</span><span id="balance-num">--</span></div>
     <div class="balance-row">
       <div class="balance-stat"><div class="balance-stat-label">本年收入</div><div id="total-income-disp" style="color:var(--green)">--</div></div>
@@ -133,19 +129,19 @@
   </div>
 
   <div id="tabs">
-    <div class="tab active" onclick="switchTab('records')">帳務記錄</div>
-    <div class="tab" onclick="switchTab('units')">住戶管理</div>
-    <div class="tab" onclick="switchTab('history')">收支明細</div>
+    <div class="tab" onclick="switchTab('records')">帳務記錄</div>
+    <div class="tab active" onclick="switchTab('units')">住戶管理</div>
+    <div class="tab" onclick="switchTab('history')">全期明細</div>
   </div>
 
   <div id="content">
-    <div id="tab-records"><div class="section"><div class="section-title" id="rec-title">2026 帳務</div><div id="records-list"></div></div></div>
-    <div id="tab-units" style="display:none">
+    <div id="tab-records" style="display:none"><div class="section"><div class="section-title" id="rec-title">帳務</div><div id="records-list"></div></div></div>
+    <div id="tab-units">
       <div id="unpaid-alert-area"></div>
-      <div class="section"><div class="section-title">樓層結構模擬 (中間為電梯)</div></div>
+      <div class="section"><div class="section-title">大樓結構模擬 (中間為電梯)</div></div>
       <div class="floor-layout" id="unit-grid"></div>
     </div>
-    <div id="tab-history" style="display:none"><div class="section"><div class="section-title">全期明細</div><div id="history-list"></div></div></div>
+    <div id="tab-history" style="display:none"><div class="section"><div class="section-title">全期流水帳</div><div id="history-list"></div></div></div>
   </div>
 
   <div id="fab-area">
@@ -157,7 +153,7 @@
 <div class="overlay" id="income-overlay" onclick="closeIfOutside(event,'income-overlay')"><div class="sheet"><div style="font-size:18px;font-weight:700;color:var(--gold);margin-bottom:15px;text-align:center">新增收入</div><input type="date" id="income-date" class="form-input"><input type="text" id="income-desc" placeholder="說明" class="form-input"><input type="number" id="income-amount" placeholder="金額" class="form-input"><div style="display:flex;gap:10px"><button class="fab" style="background:var(--bg3);color:var(--text2)" onclick="closeSheet('income')">取消</button><button class="fab" style="background:var(--gold);color:var(--bg)" onclick="submitRecord('income')">確認</button></div></div></div>
 <div class="overlay" id="expense-overlay" onclick="closeIfOutside(event,'expense-overlay')"><div class="sheet"><div style="font-size:18px;font-weight:700;color:var(--gold);margin-bottom:15px;text-align:center">新增支出</div><input type="date" id="expense-date" class="form-input"><input type="text" id="expense-desc" placeholder="說明" class="form-input"><input type="number" id="expense-amount" placeholder="金額" class="form-input"><div style="display:flex;gap:10px"><button class="fab" style="background:var(--bg3);color:var(--text2)" onclick="closeSheet('expense')">取消</button><button class="fab" style="background:var(--red);color:#fff" onclick="submitRecord('expense')">確認</button></div></div></div>
 <div class="overlay" id="unit-overlay" onclick="closeIfOutside(event,'unit-overlay')"><div class="sheet"><div id="unit-sheet-title" style="font-size:18px;font-weight:700;color:var(--gold);margin-bottom:15px;text-align:center"></div><div class="month-grid" id="unit-month-grid"></div><button class="fab" style="width:100%;margin-top:20px;background:var(--bg3);color:var(--text2)" onclick="closeSheet('unit')">關閉</button></div></div>
-<div class="overlay" id="version-overlay" onclick="closeIfOutside(event,'version-overlay')"><div class="sheet"><div style="font-size:18px;font-weight:700;color:var(--gold);margin-bottom:15px;text-align:center">更新履歷</div><div style="font-size:13px; line-height:1.6">• 新增年份切換器，支援跨年度獨立管理<br>• 繳費狀態依年份區分，結餘採跨年累計<br>• 保留呼吸電梯、天氣定位與離線偵測</div><button class="fab" style="width:100%;margin-top:20px;background:var(--bg3);color:var(--text2)" onclick="closeSheet('version')">關閉</button></div></div>
+<div class="overlay" id="version-overlay" onclick="closeIfOutside(event,'version-overlay')"><div class="sheet"><div style="font-size:18px;font-weight:700;color:var(--gold);margin-bottom:15px;text-align:center">更新履歷</div><div style="font-size:13px; line-height:1.6">• 移除圓餅圖，回歸簡潔樓層模擬介面<br>• 支援跨年份管理，繳費狀態按年獨立<br>• 總結餘採跨年累計制<br>• 保留呼吸電梯、定位天氣與離線偵測</div><button class="fab" style="width:100%;margin-top:20px;background:var(--bg3);color:var(--text2)" onclick="closeSheet('version')">關閉</button></div></div>
 
 <script>
 const INIT_BALANCE = 97246;
@@ -170,10 +166,7 @@ let state = { currentYear: "2026", records: [], payments: {}, nextId: 1 };
 
 function loadData() {
   const saved = localStorage.getItem('weishi_v2_data');
-  if (saved) {
-    state = JSON.parse(saved);
-  } else {
-    // 自動搬移 1.9.2 舊版資料到 2026 年
+  if (saved) { state = JSON.parse(saved); } else {
     const old = localStorage.getItem('weishi-state-v2');
     if (old) {
       const o = JSON.parse(old);
@@ -187,40 +180,31 @@ function loadData() {
   document.getElementById('year-selector').value = state.currentYear;
 }
 function saveData() { localStorage.setItem('weishi_v2_data', JSON.stringify(state)); }
-
 function changeYear() {
   state.currentYear = document.getElementById('year-selector').value;
   if (!state.payments[state.currentYear]) state.payments[state.currentYear] = {};
   saveData(); render();
 }
-
 function render() {
-  let totalB = INIT_BALANCE;
-  state.records.forEach(r => totalB += (r.type === 'income' ? r.amount : -r.amount));
+  let totalB = INIT_BALANCE; state.records.forEach(r => totalB += (r.type === 'income' ? r.amount : -r.amount));
   document.getElementById('balance-num').textContent = totalB.toLocaleString();
-  
   const yrRecs = state.records.filter(r => new Date(r.date).getFullYear().toString() === state.currentYear);
   const yrInc = yrRecs.filter(r=>r.type==='income').reduce((s,r)=>s+r.amount,0);
   const yrExp = yrRecs.filter(r=>r.type==='expense').reduce((s,r)=>s+r.amount,0);
-  
   document.getElementById('total-income-disp').textContent = 'NT$ ' + yrInc.toLocaleString();
   document.getElementById('total-expense-disp').textContent = 'NT$ ' + yrExp.toLocaleString();
-  
   const currPay = state.payments[state.currentYear] || {};
   const paidCount = UNITS.filter(u => MONTHS.some(m => currPay[u] && currPay[u][m])).length;
   document.getElementById('paid-units-disp').textContent = paidCount + ' / 12';
   document.getElementById('rec-title').textContent = `${state.currentYear} 帳務`;
-  
   renderUnits(); renderRecords(); renderHistory(); renderUnpaidAlert();
 }
-
 function renderUnpaidAlert() {
   const currPay = state.payments[state.currentYear] || {};
   const unpaid = UNITS.filter(u => !MONTHS.some(m => currPay[u] && currPay[u][m]));
   const area = document.getElementById('unpaid-alert-area');
   area.innerHTML = unpaid.length > 0 ? `<div class="unpaid-alert-box"><div style="font-size:11px;color:var(--red);font-weight:700">⚠️ ${state.currentYear} 尚未繳費</div><div class="unpaid-list">${unpaid.map(u => `<span class="unpaid-tag">${u}</span>`).join('')}</div></div>` : '';
 }
-
 function getUnitCard(u) {
   const p = state.payments[state.currentYear][u] || {};
   const pm = MONTHS.filter(m => p[m]);
@@ -229,20 +213,12 @@ function getUnitCard(u) {
   const dots = MONTHS.map(m => `<div class="dot ${p[m]?'paid':''}"></div>`).join('');
   return `<div class="unit-card" onclick="openUnitSheet('${u}')"><div class="unit-name">${u}</div><div class="unit-dots">${dots}</div>${dd}</div>`;
 }
-
-function renderUnits() {
-  document.getElementById('unit-grid').innerHTML = FLOORS.map(f => `<div class="floor-row">${getUnitCard(f.L)}<div class="elevator-shaft">${ELEVATOR_SVG}</div>${getUnitCard(f.R)}</div>`).join('');
-}
-
+function renderUnits() { document.getElementById('unit-grid').innerHTML = FLOORS.map(f => `<div class="floor-row">${getUnitCard(f.L)}<div class="elevator-shaft">${ELEVATOR_SVG}</div>${getUnitCard(f.R)}</div>`).join(''); }
 function renderRecords() {
   const yrRecs = state.records.filter(r => new Date(r.date).getFullYear().toString() === state.currentYear).reverse();
   document.getElementById('records-list').innerHTML = yrRecs.length === 0 ? '<div style="color:var(--text2);text-align:center;padding:20px">尚無紀錄</div>' : yrRecs.map(r => `<div class="record"><div class="record-top"><div>${r.desc}</div><div class="record-amount ${r.type}">${r.type==='income'?'＋':'－'} ${r.amount.toLocaleString()}</div></div><div style="font-size:11px;color:var(--text2);margin-top:4px">${r.date}</div></div>`).join('');
 }
-
-function renderHistory() {
-  document.getElementById('history-list').innerHTML = [...state.records].reverse().map(r => `<div class="record" style="padding:10px;margin-bottom:8px"><div style="display:flex;justify-content:space-between"><div style="font-size:13px">${r.desc}</div><div style="font-size:13px;color:var(--${r.type==='income'?'green':'red'})">${r.type==='income'?'＋':'－'}${r.amount.toLocaleString()}</div></div><div style="font-size:10px;color:var(--text2);margin-top:4px">${r.date}</div></div>`).join('');
-}
-
+function renderHistory() { document.getElementById('history-list').innerHTML = [...state.records].reverse().map(r => `<div class="record" style="padding:10px;margin-bottom:8px"><div style="display:flex;justify-content:space-between"><div style="font-size:13px">${r.desc}</div><div style="font-size:13px;color:var(--${r.type==='income'?'green':'red'})">${r.type==='income'?'＋':'－'}${r.amount.toLocaleString()}</div></div><div style="font-size:10px;color:var(--text2);margin-top:4px">${r.date}</div></div>`).join(''); }
 function shareStatus() {
   const now = new Date(); let text = `🏢 偉士大樓報表 (${state.currentYear}/${now.getMonth()+1}/${now.getDate()})\n--------------------\n`;
   UNITS.forEach(u => { const p = state.payments[state.currentYear][u] || {}; const pm = MONTHS.filter(m => p[m]); text += pm.length > 0 ? `✅ ${u}：最新繳費 ${p[pm[pm.length-1]]}\n` : `❌ ${u}：尚未繳費\n`; });
@@ -250,7 +226,6 @@ function shareStatus() {
   text += `\n結餘：NT$ ${tb.toLocaleString()}`;
   if (navigator.share) navigator.share({ title: '報表', text: text }); else { navigator.clipboard.writeText(text); alert('已複製！'); }
 }
-
 let activeUnit = null;
 function openUnitSheet(u) {
   activeUnit = u; document.getElementById('unit-sheet-title').textContent = `${state.currentYear} - ${u}`;
@@ -260,17 +235,10 @@ function openUnitSheet(u) {
 }
 function toggleMonth(m) {
   const yr = state.currentYear; if (!state.payments[yr][activeUnit]) state.payments[yr][activeUnit] = {};
-  if (state.payments[yr][activeUnit][m]) {
-    delete state.payments[yr][activeUnit][m];
-    state.records = state.records.filter(r => !(r.desc === `${activeUnit} ${yr} ${m} 管理費`));
-  } else {
-    const today = new Date().toISOString().split('T')[0];
-    state.payments[yr][activeUnit][m] = today;
-    state.records.push({ id: state.nextId++, type: 'income', date: today, desc: `${activeUnit} ${yr} ${m} 管理費`, amount: 1500 });
-  }
+  if (state.payments[yr][activeUnit][m]) { delete state.payments[yr][activeUnit][m]; state.records = state.records.filter(r => !(r.desc === `${activeUnit} ${yr} ${m} 管理費`)); }
+  else { const today = new Date().toISOString().split('T')[0]; state.payments[yr][activeUnit][m] = today; state.records.push({ id: state.nextId++, type: 'income', date: today, desc: `${activeUnit} ${yr} ${m} 管理費`, amount: 1500 }); }
   saveData(); render(); openUnitSheet(activeUnit);
 }
-
 function openSheet(type) { if (type === 'version') { document.getElementById('version-overlay').classList.add('show'); return; } document.getElementById(type+'-date').value = new Date().toISOString().split('T')[0]; document.getElementById(type+'-overlay').classList.add('show'); }
 function submitRecord(type) {
   const d = document.getElementById(type+'-date').value, s = document.getElementById(type+'-desc').value.trim(), a = parseInt(document.getElementById(type+'-amount').value);
@@ -284,8 +252,6 @@ function switchTab(tab) {
 }
 function closeSheet(id) { document.getElementById(id+'-overlay').classList.remove('show'); }
 function closeIfOutside(e, id) { if(e.target.id === id) closeSheet(id.replace('-overlay','')); }
-
-/* 網路與時間 */
 function checkNet() {
   const box = document.getElementById('weather-box');
   if (!navigator.onLine) { box.classList.add('offline'); document.getElementById('loc-disp').textContent = '⚠️ 網路離線'; document.getElementById('temp-disp').textContent = '(離線模式)'; }
@@ -308,7 +274,6 @@ setInterval(() => {
   const now = new Date(); document.getElementById('clock').textContent = now.toTimeString().split(' ')[0];
   document.getElementById('datedisp').textContent = `${now.getFullYear()}/${now.getMonth()+1}/${now.getDate()} 週${['日','一','二','三','四','五','六'][now.getDay()]}`;
 }, 1000);
-
 loadData(); render(); checkNet();
 </script>
 </body>
