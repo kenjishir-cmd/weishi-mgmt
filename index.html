@@ -195,7 +195,7 @@
   </div>
 
   <div class="version-bar">
-    <button class="version-btn" onclick="openVersionSheet()">v1.4.0 · 更新履歷</button>
+    <button class="version-btn" onclick="openVersionSheet()">v1.5.0 · 更新履歷</button>
   </div>
 
   <div id="offline-banner">
@@ -259,7 +259,7 @@
   </div>
 
   <div id="footer-version">
-    <button class="footer-ver-btn" onclick="openVersionSheet()">偉士大樓管委費系統 · v1.4.0 · 點擊查看更新履歷</button>
+    <button class="footer-ver-btn" onclick="openVersionSheet()">偉士大樓管委費系統 · v1.5.0 · 點擊查看更新履歷</button>
   </div>
 
   <div id="fab-area">
@@ -344,26 +344,9 @@
   <div class="sheet">
     <div class="sheet-handle"></div>
     <div class="sheet-title" id="unit-sheet-title">X戶 繳費狀況</div>
-    <div class="section-title" style="margin-bottom:12px">點擊月份可選擇繳費日期</div>
+    <div class="section-title" style="margin-bottom:12px">點擊月份切換繳費狀態</div>
     <div class="month-grid" id="unit-month-grid"></div>
     <button class="btn btn-cancel" style="width:100%;margin-top:8px" onclick="closeSheet('unit')">關閉</button>
-  </div>
-</div>
-
-<!-- Month Date Picker Sheet -->
-<div class="overlay" id="monthpick-overlay" onclick="closeIfOutside(event,'monthpick-overlay')">
-  <div class="sheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-title" id="monthpick-title">選擇繳費日期</div>
-    <p id="monthpick-info" style="font-size:13px;color:var(--text2);text-align:center;margin-bottom:16px;line-height:1.7;white-space:pre-line"></p>
-    <div class="form-group">
-      <label class="form-label">繳費日期</label>
-      <input type="date" class="form-input" id="monthpick-date">
-    </div>
-    <div class="form-btns">
-      <button class="btn btn-cancel" style="background:var(--red-bg);color:var(--red);border-color:var(--red)" onclick="cancelMonthPick()">取消繳費</button>
-      <button class="btn btn-ok" onclick="confirmMonthPick()">確認已繳</button>
-    </div>
   </div>
 </div>
 
@@ -386,7 +369,17 @@
     <div class="sheet-title">更新履歷</div>
 
     <div class="version-item">
-      <div><span class="version-tag latest">v1.4.0</span></div>
+      <div><span class="version-tag latest">v1.5.0</span></div>
+      <div class="version-date">2026-05-03</div>
+      <ul class="version-notes">
+        <li>住戶繳費改為直接點月份確認／取消，移除日期選擇器</li>
+        <li>解決 Android 無法限制日期範圍的問題</li>
+        <li>月份格只顯示 ✓ 已繳 或 未繳，簡單清楚</li>
+      </ul>
+    </div>
+
+    <div class="version-item">
+      <div><span class="version-tag">v1.4.0</span></div>
       <div class="version-date">2026-05-03</div>
       <ul class="version-notes">
         <li>修正 PWA App 無法自動同步最新版本的問題</li>
@@ -675,52 +668,43 @@ function openUnitSheet(unit) {
 function renderUnitMonths(unit) {
   const p = state.payments[unit] || {};
   document.getElementById('unit-month-grid').innerHTML = MONTHS.map(m => {
-    const val    = p[m];
-    const isPaid = !!val;
-    const dateLabel = isPaid ? `<span class="month-paid-date">${val}</span>` : '';
-    return `<button class="month-btn ${isPaid?'paid':''}" onclick="openMonthPick('${unit}','${m}')">
-      ${m}${isPaid?'<br>✓':''}${dateLabel}
+    const isPaid = !!p[m];
+    return `<button class="month-btn ${isPaid?'paid':''}" onclick="toggleMonth('${unit}','${m}')">
+      ${m}<br>${isPaid ? '✓' : '－'}
     </button>`;
   }).join('');
 }
 
-// ── MONTH DATE PICKER ─────────────────────────────────
-let pickUnit = null, pickMonth = null;
-function openMonthPick(unit, month) {
-  pickUnit = unit; pickMonth = month;
-  const val = state.payments[unit][month];
-  document.getElementById('monthpick-title').textContent = `${unit} · ${month} 繳費日期`;
-  document.getElementById('monthpick-info').textContent  = val
-    ? `目前記錄：已繳（${val}）\n可重新選擇日期，或點左側按鈕取消繳費`
-    : `請選擇 ${unit} ${month} 的繳費日期`;
-  document.getElementById('monthpick-date').value =
-    (val && val.includes('-')) ? val : new Date().toISOString().split('T')[0];
-  document.getElementById('unit-overlay').classList.remove('show');
-  document.getElementById('monthpick-overlay').classList.add('show');
-}
-function confirmMonthPick() {
-  const d = document.getElementById('monthpick-date').value;
-  if (!d) { alert('請選擇日期'); return; }
-  showConfirm(
-    '確認已繳費',
-    `${pickUnit} ${pickMonth}\n繳費日期：${d}`,
-    () => {
-      state.payments[pickUnit][pickMonth] = d;
-      saveState();
-      document.getElementById('monthpick-overlay').classList.remove('show');
-      openUnitSheet(pickUnit);
-      render();
-    }
-  );
-}
-function cancelMonthPick() {
-  showConfirm('取消繳費', `${pickUnit} ${pickMonth}\n標記為【未繳】？`, () => {
-    state.payments[pickUnit][pickMonth] = null;
-    saveState();
-    document.getElementById('monthpick-overlay').classList.remove('show');
-    openUnitSheet(pickUnit);
-    render();
-  }, true);
+// ── MONTH TOGGLE（直接確認，無日期選擇）────────────────
+function toggleMonth(unit, month) {
+  const isPaid = !!state.payments[unit][month];
+  if (isPaid) {
+    // 已繳 → 確認取消
+    showConfirm(
+      '取消繳費',
+      `${unit}　${month}\n標記為【未繳】？`,
+      () => {
+        state.payments[unit][month] = null;
+        saveState();
+        renderUnitMonths(unit);
+        render();
+      },
+      true
+    );
+  } else {
+    // 未繳 → 確認已繳
+    showConfirm(
+      '確認已繳費',
+      `${unit}　${month}\n標記為【已繳】？`,
+      () => {
+        state.payments[unit][month] = '已繳';
+        saveState();
+        renderUnitMonths(unit);
+        render();
+      },
+      false
+    );
+  }
 }
 
 // ── VERSION ───────────────────────────────────────────
@@ -751,25 +735,9 @@ window.addEventListener('online',  updateOnlineStatus);
 window.addEventListener('offline', updateOnlineStatus);
 updateOnlineStatus();
 
-// ── SERVICE WORKER（含自動更新）────────────────────────
+// ── SERVICE WORKER ────────────────────────────────────
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js').then(reg => {
-    // 偵測到新版 SW 安裝中 → 完成後送 SKIP_WAITING
-    reg.addEventListener('updatefound', () => {
-      const newWorker = reg.installing;
-      newWorker.addEventListener('statechange', () => {
-        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-          newWorker.postMessage('SKIP_WAITING');
-        }
-      });
-    });
-  }).catch(() => {});
-
-  // SW 接管後自動重新載入，確保拿到最新頁面
-  let refreshing = false;
-  navigator.serviceWorker.addEventListener('controllerchange', () => {
-    if (!refreshing) { refreshing = true; window.location.reload(); }
-  });
+  navigator.serviceWorker.register('./sw.js').catch(() => {});
 }
 
 render();
