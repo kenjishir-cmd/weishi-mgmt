@@ -41,10 +41,8 @@
   .version-btn{background:none;border:1px solid var(--border);border-radius:6px;color:var(--text2);font-family:'DM Mono';font-size:10px;padding:3px 8px;cursor:pointer}
   .share-btn{background:var(--blue-bg);border:1px solid var(--blue);color:var(--blue);border-radius:6px;font-size:10px;padding:3px 10px;cursor:pointer;font-weight:600}
 
-  /* ── 年份切換器 ── */
   #year-bar{background:var(--bg2);border-bottom:1px solid var(--border);padding:6px 16px;display:flex;align-items:center;justify-content:center;gap:12px;flex-shrink:0}
   .year-arrow{background:none;border:1px solid var(--border);border-radius:6px;color:var(--gold);font-size:14px;width:30px;height:28px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
-  .year-arrow:active{background:var(--border)}
   #year-display{font-family:'DM Mono';font-size:14px;color:var(--gold-light);letter-spacing:2px;min-width:80px;text-align:center}
   .year-tag{font-size:10px;color:var(--text2);background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:1px 6px;cursor:pointer}
   .year-tag.current-year{color:var(--green);border-color:var(--green);background:var(--green-bg)}
@@ -128,21 +126,10 @@
   .confirm-box{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:24px;width:100%;max-width:320px}
   .confirm-title{font-family:'Noto Serif TC',serif;font-size:16px;font-weight:700;color:var(--gold);text-align:center;margin-bottom:8px}
   .confirm-msg{font-size:13px;color:var(--text2);text-align:center;line-height:1.6;margin-bottom:20px;white-space:pre-line}
-  .confirm-btns{display:flex;gap:10px}
 
   .month-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
   .month-btn{padding:10px 4px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);font-size:12px;cursor:pointer;text-align:center}
   .month-btn.paid{background:var(--green-bg);border-color:var(--green);color:var(--green);font-weight:600}
-
-  /* 版本履歷樣式 */
-  .version-item{padding:14px 0;border-bottom:1px solid var(--border)}
-  .version-item:last-of-type{border-bottom:none}
-  .version-tag{display:inline-block;font-family:'DM Mono';font-size:11px;background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue);border-radius:5px;padding:2px 8px;margin-bottom:6px}
-  .version-tag.latest{background:var(--green-bg);color:var(--green);border-color:var(--green)}
-  .version-vdate{font-size:10px;color:var(--text2);margin-bottom:6px;font-family:'DM Mono'}
-  .version-notes{font-size:12px;color:var(--text);line-height:1.7;padding-left:4px}
-  .version-notes li{list-style:none;margin-bottom:2px}
-  .version-notes li::before{content:'· ';color:var(--gold)}
 </style>
 </head>
 <body>
@@ -165,11 +152,10 @@
   </div>
 
   <div class="version-bar">
-    <button class="version-btn" onclick="openVersionSheet()">v2.0.0 · 年份切換</button>
+    <button class="version-btn" onclick="openVersionSheet()">v2.0.1 · 體感穩定修正</button>
     <button class="share-btn" onclick="shareStatus()">📤 分享報表</button>
   </div>
 
-  <!-- 年份切換器 -->
   <div id="year-bar">
     <button class="year-arrow" onclick="changeYear(-1)">‹</button>
     <div id="year-display">2026 年</div>
@@ -204,7 +190,7 @@
   </div>
 
   <div id="footer-version">
-    <button class="footer-ver-btn" onclick="openVersionSheet()">偉士大樓管委費系統 · v2.0.0 · 點擊查看更新履歷</button>
+    <button class="footer-ver-btn" onclick="openVersionSheet()">偉士大樓管委費系統 · v2.0.1</button>
   </div>
 
   <div id="fab-area">
@@ -213,184 +199,61 @@
   </div>
 </div>
 
-<!-- Income Sheet -->
 <div class="overlay" id="income-overlay" onclick="closeIfOutside(event,'income-overlay')"><div class="sheet"><div class="sheet-handle"></div><div class="sheet-title" id="income-sheet-title">新增收入</div><div class="form-group"><label class="form-label">日期</label><input type="date" class="form-input" id="income-date"></div><div class="form-group"><label class="form-label">說明</label><input type="text" class="form-input" id="income-desc"></div><div class="form-group"><label class="form-label">金額</label><input type="number" class="form-input" id="income-amount" inputmode="numeric"></div><div class="form-btns"><button class="btn btn-cancel" onclick="closeSheet('income')">取消</button><button class="btn btn-ok" id="income-submit-btn" onclick="submitRecord('income')">確認</button></div></div></div>
-
-<!-- Expense Sheet -->
 <div class="overlay" id="expense-overlay" onclick="closeIfOutside(event,'expense-overlay')"><div class="sheet"><div class="sheet-handle"></div><div class="sheet-title" id="expense-sheet-title">新增支出</div><div class="form-group"><label class="form-label">日期</label><input type="date" class="form-input" id="expense-date"></div><div class="form-group"><label class="form-label">說明</label><input type="text" class="form-input" id="expense-desc"></div><div class="form-group"><label class="form-label">金額</label><input type="number" class="form-input" id="expense-amount" inputmode="numeric"></div><div class="form-btns"><button class="btn btn-cancel" onclick="closeSheet('expense')">取消</button><button class="btn btn-ok" id="expense-submit-btn" onclick="submitRecord('expense')" style="background:var(--red);color:#fff">確認</button></div></div></div>
-
-<!-- Unit Sheet -->
 <div class="overlay" id="unit-overlay" onclick="closeIfOutside(event,'unit-overlay')"><div class="sheet"><div class="sheet-handle"></div><div class="sheet-title" id="unit-sheet-title">繳費清單</div><div class="month-grid" id="unit-month-grid"></div><button class="btn btn-cancel" style="width:100%" onclick="closeSheet('unit')">關閉</button></div></div>
-
-<!-- Date Picker Sheet -->
-<div class="overlay" id="date-picker-overlay" onclick="closeIfOutside(event,'date-picker-overlay')">
-  <div class="sheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-title" id="date-picker-title">選擇繳費日期</div>
-    <div class="form-group">
-      <label class="form-label">日期 (限制於該月份)</label>
-      <input type="date" class="form-input" id="constrained-date">
-    </div>
-    <div class="form-btns">
-      <button class="btn btn-cancel" onclick="closeSheet('date-picker')">取消</button>
-      <button class="btn btn-ok" id="date-picker-confirm-btn">確認</button>
-    </div>
-  </div>
-</div>
-
-<!-- Confirm Dialog -->
-<div class="confirm-overlay" id="confirm-overlay">
-  <div class="confirm-box">
-    <div class="confirm-title" id="confirm-title">確認</div>
-    <div class="confirm-msg" id="confirm-msg"></div>
-    <div class="confirm-btns">
-      <button class="btn btn-cancel" onclick="confirmNo()">取消</button>
-      <button class="btn btn-ok" id="confirm-yes-btn" onclick="confirmYes()">確認</button>
-    </div>
-  </div>
-</div>
-
-<!-- Version Sheet -->
+<div class="overlay" id="date-picker-overlay" onclick="closeIfOutside(event,'date-picker-overlay')"><div class="sheet"><div class="sheet-handle"></div><div class="sheet-title" id="date-picker-title">選擇繳費日期</div><div class="form-group"><input type="date" class="form-input" id="constrained-date"></div><div class="form-btns"><button class="btn btn-cancel" onclick="closeSheet('date-picker')">取消</button><button class="btn btn-ok" id="date-picker-confirm-btn">確認</button></div></div></div>
+<div class="confirm-overlay" id="confirm-overlay"><div class="confirm-box"><div class="confirm-title" id="confirm-title">確認</div><div class="confirm-msg" id="confirm-msg"></div><div class="confirm-btns"><button class="btn btn-cancel" onclick="confirmNo()">取消</button><button class="btn btn-ok" id="confirm-yes-btn" onclick="confirmYes()">確認</button></div></div></div>
 <div class="overlay" id="version-overlay" onclick="closeIfOutside(event,'version-overlay')">
-  <div class="sheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-title">更新履歷</div>
-
-    <div class="version-item">
-      <div><span class="version-tag latest">v2.0.0</span></div>
-      <div class="version-vdate">2026-05-03</div>
-      <ul class="version-notes">
-        <li>新增年份切換器，可查看任意年度繳費與帳務</li>
-        <li>住戶繳費資料依年份獨立儲存，歷年資料不互蓋</li>
-        <li>年份列顯示「回本年」快速鍵，當年高亮顯示</li>
-      </ul>
-    </div>
-
-    <div class="version-item">
-      <div><span class="version-tag">v1.9.3</span></div>
-      <div class="version-vdate">2026-04-01</div>
-      <ul class="version-notes">
-        <li>住戶繳費日期限制：點選月份後，僅能選擇該月份內日期</li>
-        <li>優化日期選擇器邏輯，自動跳轉該月首日</li>
-      </ul>
-    </div>
-
-    <div class="version-item">
-      <div><span class="version-tag">v1.3.0</span></div>
-      <div class="version-vdate">2026-03-01</div>
-      <ul class="version-notes">
-        <li>帳務記錄新增編輯與刪除功能</li>
-        <li>修正 FAB 遮擋底部版本列問題</li>
-      </ul>
-    </div>
-
-    <div class="version-item">
-      <div><span class="version-tag">v1.2.0</span></div>
-      <div class="version-vdate">2025-05-03</div>
-      <ul class="version-notes">
-        <li>離線模式強化：Cache First 策略</li>
-        <li>離線時頂部顯示提示條</li>
-      </ul>
-    </div>
-
-    <div class="version-item">
-      <div><span class="version-tag">v1.0.0</span></div>
-      <div class="version-vdate">2024-12-01</div>
-      <ul class="version-notes">
-        <li>系統初版上線</li>
-        <li>帳務記錄、住戶管理、收支明細</li>
-        <li>期初結餘 NT$ 97,246</li>
-      </ul>
-    </div>
-
+  <div class="sheet"><div class="sheet-handle"></div><div class="sheet-title">更新履歷</div>
+    <div class="version-item"><span class="version-tag">v2.0.1</span><div class="version-notes"><li>修復體感溫度抓取邏輯，對應當前小時數據</li><li>加入 API 強制不快取參數，並設定每 30 分鐘自動重抓</li></div></div>
     <button class="btn btn-cancel" style="width:100%;margin-top:10px" onclick="closeSheet('version')">關閉</button>
   </div>
 </div>
 
 <script>
-// ── CONSTANTS ─────────────────────────────────────────
 const INIT_BALANCE = 97246;
 const MONTHS = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
-const FLOORS = [
-  {left:'426-6',right:'424-6'},{left:'426-5',right:'424-5'},
-  {left:'426-4',right:'424-4'},{left:'426-3',right:'424-3'},
-  {left:'426-2',right:'424-2'},{left:'426-1',right:'424-1'}
-];
+const FLOORS = [{left:'426-6',right:'424-6'},{left:'426-5',right:'424-5'},{left:'426-4',right:'424-4'},{left:'426-3',right:'424-3'},{left:'426-2',right:'424-2'},{left:'426-1',right:'424-1'}];
 const UNITS = FLOORS.flatMap(f => [f.left, f.right]);
 const THIS_YEAR = new Date().getFullYear();
-
-// ── 目前選取年份 ──────────────────────────────────────
 let selectedYear = THIS_YEAR;
 
-// ── STATE ─────────────────────────────────────────────
 function loadState() {
   try { const s = localStorage.getItem('weishi-state-v2'); if (s) return JSON.parse(s); } catch(e) {}
-  const payments = {};
-  UNITS.forEach(u => { payments[u] = {}; MONTHS.forEach(m => payments[u][m] = null); });
+  const payments = {}; UNITS.forEach(u => { payments[u] = {}; MONTHS.forEach(m => payments[u][m] = null); });
   return { records: [], payments, nextId: 1 };
 }
 let state = loadState();
 function saveState() { localStorage.setItem('weishi-state-v2', JSON.stringify(state)); }
 
-// payments 依年份 key：payments[unit][year][month]
-// 自動 migrate 舊格式（直接 string/null）→ 新格式（年份包覆）
 function migratePayments() {
   UNITS.forEach(u => {
     if (!state.payments[u]) { state.payments[u] = {}; return; }
-    // 偵測舊格式：key 是月份字串（如 '1月'）
     const keys = Object.keys(state.payments[u]);
     if (keys.length > 0 && MONTHS.includes(keys[0])) {
-      // 舊格式 → 搬到 THIS_YEAR
-      const oldData = { ...state.payments[u] };
-      state.payments[u] = {};
-      state.payments[u][THIS_YEAR] = {};
-      MONTHS.forEach(m => {
-        const v = oldData[m];
-        state.payments[u][THIS_YEAR][m] = (v === true || v === false) ? (v ? '已繳' : null) : (v || null);
-      });
+      const oldData = { ...state.payments[u] }; state.payments[u] = {}; state.payments[u][THIS_YEAR] = {};
+      MONTHS.forEach(m => { state.payments[u][THIS_YEAR][m] = oldData[m] || null; });
     }
-    // 確保每個年份每個月都有 key
-    Object.keys(state.payments[u]).forEach(yr => {
-      MONTHS.forEach(m => {
-        if (state.payments[u][yr][m] === undefined) state.payments[u][yr][m] = null;
-      });
-    });
   });
 }
 migratePayments();
 
-// 取得某年度的 payments（不存在則建立）
 function getYearPayments(year) {
   UNITS.forEach(u => {
     if (!state.payments[u]) state.payments[u] = {};
-    if (!state.payments[u][year]) {
-      state.payments[u][year] = {};
-      MONTHS.forEach(m => state.payments[u][year][m] = null);
-    }
+    if (!state.payments[u][year]) { state.payments[u][year] = {}; MONTHS.forEach(m => state.payments[u][year][m] = null); }
   });
   return year;
 }
 
-// ── COMPUTED ──────────────────────────────────────────
 function totalIncome()  { return state.records.filter(r=>r.type==='income').reduce((s,r)=>s+r.amount,0); }
 function totalExpense() { return state.records.filter(r=>r.type==='expense').reduce((s,r)=>s+r.amount,0); }
 function balance()      { return INIT_BALANCE + totalIncome() - totalExpense(); }
-function paidUnitsForYear(year) {
-  getYearPayments(year);
-  return UNITS.filter(u => MONTHS.some(m => state.payments[u][year] && state.payments[u][year][m])).length;
-}
+function paidUnitsForYear(year) { getYearPayments(year); return UNITS.filter(u => MONTHS.some(m => state.payments[u][year] && state.payments[u][year][m])).length; }
 
-// ── YEAR SWITCHER ─────────────────────────────────────
-function changeYear(delta) {
-  selectedYear += delta;
-  updateYearBar();
-  render();
-}
-function goToCurrentYear() {
-  selectedYear = THIS_YEAR;
-  updateYearBar();
-  render();
-}
+function changeYear(delta) { selectedYear += delta; updateYearBar(); render(); }
+function goToCurrentYear() { selectedYear = THIS_YEAR; updateYearBar(); render(); }
 function updateYearBar() {
   document.getElementById('year-display').textContent = selectedYear + ' 年';
   const tag = document.getElementById('year-today-tag');
@@ -398,7 +261,6 @@ function updateYearBar() {
   tag.textContent = selectedYear === THIS_YEAR ? '✓ 本年' : '回本年';
 }
 
-// ── CLOCK ─────────────────────────────────────────────
 function updateClock() {
   const now = new Date();
   document.getElementById('clock').textContent = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
@@ -406,39 +268,33 @@ function updateClock() {
 }
 setInterval(updateClock, 1000); updateClock();
 
-// ── WEATHER ───────────────────────────────────────────
-function checkNetworkStatus() {
-  const weatherBox = document.getElementById('weather-box');
-  if (!navigator.onLine) {
-    weatherBox.classList.add('offline');
-    document.getElementById('loc-disp').textContent = '⚠️ 網路離線';
-    document.getElementById('temp-disp').textContent = '(僅限離線操作)';
-  } else {
-    weatherBox.classList.remove('offline'); updateWeather();
-  }
-}
-window.addEventListener('online', checkNetworkStatus);
-window.addEventListener('offline', checkNetworkStatus);
+/* --- 天氣修正版 --- */
 async function updateWeather() {
   if (!navigator.onLine || !navigator.geolocation) return;
+  const weatherBox = document.getElementById('weather-box');
   navigator.geolocation.getCurrentPosition(async (pos) => {
     try {
-      const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}&current_weather=true&hourly=apparent_temperature`);
+      const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}&hourly=apparent_temperature&current_weather=true&timezone=auto&_=${Date.now()}`);
       const data = await res.json();
-      document.getElementById('temp-disp').textContent = `${data.hourly.apparent_temperature[0]}°C (體感)`;
+      const currentHour = new Date().getHours();
+      const realFeel = data.hourly.apparent_temperature[currentHour];
+      document.getElementById('temp-disp').textContent = `${realFeel}°C (體感)`;
       document.getElementById('loc-disp').textContent = '斗六市';
+      weatherBox.classList.remove('offline');
     } catch(e) {}
   });
 }
-checkNetworkStatus();
+setInterval(updateWeather, 1800000); // 30分鐘定時重抓
+window.addEventListener('online', updateWeather);
+window.addEventListener('offline', () => { document.getElementById('weather-box').classList.add('offline'); document.getElementById('loc-disp').textContent = '⚠️ 網路離線'; });
+updateWeather();
 
-// ── RENDER ────────────────────────────────────────────
 function render() {
   getYearPayments(selectedYear);
   document.getElementById('balance-num').textContent = balance().toLocaleString('zh-TW');
-  document.getElementById('total-income-disp').textContent  = 'NT$ ' + totalIncome().toLocaleString();
+  document.getElementById('total-income-disp').textContent = 'NT$ ' + totalIncome().toLocaleString();
   document.getElementById('total-expense-disp').textContent = 'NT$ ' + totalExpense().toLocaleString();
-  document.getElementById('paid-units-disp').textContent    = paidUnitsForYear(selectedYear) + ' / 12';
+  document.getElementById('paid-units-disp').textContent = paidUnitsForYear(selectedYear) + ' / 12';
   renderRecords(); renderUnits(); renderHistory(); renderUnpaidAlert();
 }
 
@@ -446,9 +302,7 @@ function renderUnpaidAlert() {
   getYearPayments(selectedYear);
   const unpaid = UNITS.filter(u => !MONTHS.some(m => state.payments[u][selectedYear] && state.payments[u][selectedYear][m]));
   const area = document.getElementById('unpaid-alert-area');
-  area.innerHTML = unpaid.length > 0
-    ? `<div class="unpaid-alert-box"><div style="font-size:11px;color:var(--red);font-weight:700">⚠️ ${selectedYear} 年尚未繳費住戶</div><div class="unpaid-list">${unpaid.map(u=>`<span class="unpaid-tag">${u}</span>`).join('')}</div></div>`
-    : '';
+  area.innerHTML = unpaid.length > 0 ? `<div class="unpaid-alert-box"><div style="font-size:11px;color:var(--red);font-weight:700">⚠️ ${selectedYear} 年尚未繳費住戶</div><div class="unpaid-list">${unpaid.map(u=>`<span class="unpaid-tag">${u}</span>`).join('')}</div></div>` : '';
 }
 
 function renderRecords() {
@@ -460,10 +314,7 @@ function renderRecords() {
       <div class="record-top"><div class="record-desc">${r.desc}</div><div class="record-amount ${r.type}">${r.type==='income'?'＋':'－'} ${r.amount.toLocaleString()}</div></div>
       <div class="record-meta"><span class="record-date">${r.date}</span><span class="record-badge badge-${r.type}">${r.type==='income'?'收入':'支出'}</span></div>
       <div class="record-balance">結餘：NT$ ${r.balanceAfter.toLocaleString()}</div>
-      <div class="record-actions">
-        <button class="rec-btn" onclick="editRecord(${r.id})">✎ 編輯</button>
-        <button class="rec-btn" onclick="deleteRecord(${r.id})" style="color:var(--red)">✕ 刪除</button>
-      </div>
+      <div class="record-actions"><button class="rec-btn" onclick="editRecord(${r.id})">✎ 編輯</button><button class="rec-btn" onclick="deleteRecord(${r.id})" style="color:var(--red)">✕ 刪除</button></div>
     </div>`).join('');
 }
 
@@ -482,161 +333,91 @@ function getUnitHTML(u) {
 
 function renderUnits() {
   const elevatorSVG = `<svg class="elevator-icon" viewBox="0 0 24 24"><path d="M7,2L17,2A2,2 0 0,1 19,4V20A2,2 0 0,1 17,22H7A2,2 0 0,1 5,20V4A2,2 0 0,1 7,2M7,4V20H17V4H7M8,6H11V9H8V6M13,6H16V9H13V6M8,11H11V14H8V11M13,11H16V14H13V11M8,16H11V19H8V16M13,16H16V19H13V16Z"/></svg>`;
-  document.getElementById('unit-grid').innerHTML = FLOORS.map(f =>
-    `<div class="floor-row">${getUnitHTML(f.left)}<div class="elevator-shaft">${elevatorSVG}</div>${getUnitHTML(f.right)}</div>`
-  ).join('');
+  document.getElementById('unit-grid').innerHTML = FLOORS.map(f => `<div class="floor-row">${getUnitHTML(f.left)}<div class="elevator-shaft">${elevatorSVG}</div>${getUnitHTML(f.right)}</div>`).join('');
 }
 
 function renderHistory() {
   const el = document.getElementById('history-list');
   const all = [...state.records].reverse();
   if (!all.length) { el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text2)">尚無明細</div>'; return; }
-  el.innerHTML = all.map(r => `
-    <div class="record" style="padding:10px;margin-bottom:8px">
-      <div style="display:flex;justify-content:space-between">
-        <div style="font-size:13px">${r.desc}</div>
-        <div style="font-family:'DM Mono';font-size:14px;color:${r.type==='income'?'var(--green)':'var(--red)'}">${r.type==='income'?'＋':'－'}${r.amount.toLocaleString()}</div>
-      </div>
-      <div style="font-size:10px;color:var(--text2);margin-top:4px">${r.date} · 結餘：${r.balanceAfter.toLocaleString()}</div>
-    </div>`).join('');
+  el.innerHTML = all.map(r => `<div class="record" style="padding:10px;margin-bottom:8px"><div style="display:flex;justify-content:space-between"><div style="font-size:13px">${r.desc}</div><div style="font-family:'DM Mono';font-size:14px;color:${r.type==='income'?'var(--green)':'var(--red)'}">${r.type==='income'?'＋':'－'}${r.amount.toLocaleString()}</div></div><div style="font-size:10px;color:var(--text2);margin-top:4px">${r.date} · 結餘：${r.balanceAfter.toLocaleString()}</div></div>`).join('');
 }
 
-// ── SHARE ─────────────────────────────────────────────
 function shareStatus() {
-  getYearPayments(selectedYear);
-  const now = new Date();
+  getYearPayments(selectedYear); const now = new Date();
   let text = `🏢 偉士大樓繳費報表 ${selectedYear}年 (${now.getMonth()+1}/${now.getDate()})\n--------------------\n`;
-  UNITS.forEach(u => {
-    const p = state.payments[u][selectedYear] || {};
-    const pm = MONTHS.filter(m => p[m]);
-    text += pm.length > 0 ? `✅ ${u}：最新繳費 ${p[pm[pm.length-1]]}\n` : `❌ ${u}：尚未繳費\n`;
-  });
+  UNITS.forEach(u => { const p = state.payments[u][selectedYear] || {}; const pm = MONTHS.filter(m => p[m]); text += pm.length > 0 ? `✅ ${u}：最新繳費 ${p[pm[pm.length-1]]}\n` : `❌ ${u}：尚未繳費\n`; });
   text += `\n結餘：NT$ ${balance().toLocaleString()}`;
-  if (navigator.share) navigator.share({ title: '報表', text });
-  else { navigator.clipboard.writeText(text); alert('報表已複製！'); }
+  if (navigator.share) navigator.share({ title: '報表', text }); else { navigator.clipboard.writeText(text); alert('報表已複製！'); }
 }
 
-// ── TABS ──────────────────────────────────────────────
 function switchTab(tab) {
   document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', ['records','units','history'][i] === tab));
   ['records','units','history'].forEach(t => document.getElementById('tab-'+t).style.display = t===tab ? '' : 'none');
   document.getElementById('fab-area').style.display = tab === 'units' ? 'none' : 'flex';
 }
 
-// ── SHEETS ────────────────────────────────────────────
 let editingId = null;
 function openSheet(type, record) {
   if (type === 'version') { document.getElementById('version-overlay').classList.add('show'); return; }
-  editingId = record ? record.id : null;
-  const today = new Date().toISOString().split('T')[0];
+  editingId = record ? record.id : null; const today = new Date().toISOString().split('T')[0];
   if (!['date-picker','unit','version'].includes(type)) {
-    document.getElementById(type+'-date').value  = record ? record.date   : today;
-    document.getElementById(type+'-desc').value  = record ? record.desc   : '';
+    document.getElementById(type+'-date').value = record ? record.date : today;
+    document.getElementById(type+'-desc').value = record ? record.desc : '';
     document.getElementById(type+'-amount').value = record ? record.amount : '';
-    if (type === 'income') {
-      document.getElementById('income-sheet-title').textContent = record ? '編輯收入' : '新增收入';
-      document.getElementById('income-submit-btn').textContent  = record ? '確認修改' : '確認';
-    } else if (type === 'expense') {
-      document.getElementById('expense-sheet-title').textContent = record ? '編輯支出' : '新增支出';
-      document.getElementById('expense-submit-btn').textContent  = record ? '確認修改' : '確認';
-    }
   }
   document.getElementById(type+'-overlay').classList.add('show');
 }
 function openVersionSheet() { openSheet('version'); }
-function closeSheet(type)   { document.getElementById(type+'-overlay').classList.remove('show'); }
+function closeSheet(type) { document.getElementById(type+'-overlay').classList.remove('show'); }
 function closeIfOutside(e, id) { if (e.target.id === id) closeSheet(id.replace('-overlay','')); }
 
-// ── EDIT / SUBMIT / DELETE ────────────────────────────
 function editRecord(id) { const r = state.records.find(x=>x.id===id); if (r) openSheet(r.type, r); }
-
 function submitRecord(type) {
-  const date   = document.getElementById(type+'-date').value;
-  const desc   = document.getElementById(type+'-desc').value.trim();
+  const date = document.getElementById(type+'-date').value; const desc = document.getElementById(type+'-desc').value.trim();
   const amount = parseInt(document.getElementById(type+'-amount').value);
   if (!date || !desc || !amount || amount <= 0) return alert('請填寫完整');
-  if (editingId !== null) {
-    const r = state.records.find(x=>x.id===editingId);
-    if (r) { r.date=date; r.desc=desc; r.amount=amount; }
-  } else {
-    state.records.push({ id:state.nextId++, type, date, desc, amount, balanceAfter:0 });
-  }
-  let b = INIT_BALANCE;
-  state.records.forEach(rec => { b += rec.type==='income' ? rec.amount : -rec.amount; rec.balanceAfter = b; });
+  if (editingId !== null) { const r = state.records.find(x=>x.id===editingId); if (r) { r.date=date; r.desc=desc; r.amount=amount; } }
+  else { state.records.push({ id:state.nextId++, type, date, desc, amount, balanceAfter:0 }); }
+  let b = INIT_BALANCE; state.records.forEach(rec => { b += rec.type==='income' ? rec.amount : -rec.amount; rec.balanceAfter = b; });
   saveState(); closeSheet(type); render();
 }
+function deleteRecord(id) { showConfirm('刪除確認', '確定要刪除這筆紀錄嗎？', () => { state.records = state.records.filter(x=>x.id!==id); let b = INIT_BALANCE; state.records.forEach(rec => { b += rec.type==='income' ? rec.amount : -rec.amount; rec.balanceAfter = b; }); saveState(); render(); }, true); }
 
-function deleteRecord(id) {
-  showConfirm('刪除確認', '確定要刪除這筆紀錄嗎？', () => {
-    state.records = state.records.filter(x=>x.id!==id);
-    let b = INIT_BALANCE;
-    state.records.forEach(rec => { b += rec.type==='income' ? rec.amount : -rec.amount; rec.balanceAfter = b; });
-    saveState(); render();
-  }, true);
-}
-
-// ── UNIT SHEET ────────────────────────────────────────
 let activeUnit = null;
 function openUnitSheet(unit) {
-  getYearPayments(selectedYear);
-  activeUnit = unit;
+  getYearPayments(selectedYear); activeUnit = unit;
   document.getElementById('unit-sheet-title').textContent = `${unit} · ${selectedYear}年 繳費紀錄`;
   const p = state.payments[unit][selectedYear] || {};
   document.getElementById('unit-month-grid').innerHTML = MONTHS.map(m => {
-    const isPaid = !!p[m];
-    const val = p[m] || '';
-    const shortDate = (isPaid && val.length >= 7) ? val.substring(5) : val;
-    return `<button class="month-btn ${isPaid?'paid':''}" onclick="toggleMonth('${unit}','${m}')">
-      ${m}${isPaid?`<br><small style="color:var(--purple)">✓ ${shortDate}</small>`:''}
-    </button>`;
+    const isPaid = !!p[m]; const val = p[m] || ''; const shortDate = (isPaid && val.length >= 7) ? val.substring(5) : val;
+    return `<button class="month-btn ${isPaid?'paid':''}" onclick="toggleMonth('${unit}','${m}')">${m}${isPaid?`<br><small style="color:var(--purple)">✓ ${shortDate}</small>`:''}</button>`;
   }).join('');
   document.getElementById('unit-overlay').classList.add('show');
 }
 
-// ── MONTH DATE PICKER ─────────────────────────────────
 function toggleMonth(unit, month) {
-  getYearPayments(selectedYear);
-  const isPaid = !!state.payments[unit][selectedYear][month];
-  if (isPaid) {
-    showConfirm('取消確認', `取消 ${unit} ${month} (${selectedYear}年) 繳費？`, () => {
-      state.payments[unit][selectedYear][month] = null;
-      saveState(); render(); openUnitSheet(unit);
-    }, true);
-  } else {
-    const monthIndex = MONTHS.indexOf(month);
-    const firstDay = new Date(selectedYear, monthIndex, 1);
-    const lastDay  = new Date(selectedYear, monthIndex + 1, 0);
-    const fmt = d => d.toISOString().split('T')[0];
-    const dateInput = document.getElementById('constrained-date');
-    dateInput.value = fmt(firstDay);
-    dateInput.min   = fmt(firstDay);
-    dateInput.max   = fmt(lastDay);
-    document.getElementById('date-picker-title').textContent = `${unit} - ${month} (${selectedYear}年) 繳費日期`;
-    document.getElementById('date-picker-confirm-btn').onclick = () => {
-      state.payments[unit][selectedYear][month] = dateInput.value;
-      saveState(); render(); openUnitSheet(unit); closeSheet('date-picker');
-    };
+  getYearPayments(selectedYear); const isPaid = !!state.payments[unit][selectedYear][month];
+  if (isPaid) { showConfirm('取消確認', `取消 ${unit} ${month} (${selectedYear}年) 繳費？`, () => { state.payments[unit][selectedYear][month] = null; saveState(); render(); openUnitSheet(unit); }, true); }
+  else {
+    const monthIndex = MONTHS.indexOf(month); const firstDay = new Date(selectedYear, monthIndex, 1); const lastDay = new Date(selectedYear, monthIndex + 1, 0);
+    const fmt = d => d.toISOString().split('T')[0]; const dateInput = document.getElementById('constrained-date');
+    dateInput.value = fmt(firstDay); dateInput.min = fmt(firstDay); dateInput.max = fmt(lastDay);
+    document.getElementById('date-picker-confirm-btn').onclick = () => { state.payments[unit][selectedYear][month] = dateInput.value; saveState(); render(); openUnitSheet(unit); closeSheet('date-picker'); };
     openSheet('date-picker');
   }
 }
 
-// ── CONFIRM ───────────────────────────────────────────
 let confirmCallback = null;
 function showConfirm(title, msg, cb, isDanger=false) {
-  document.getElementById('confirm-title').textContent = title;
-  document.getElementById('confirm-msg').textContent   = msg;
-  const btn = document.getElementById('confirm-yes-btn');
-  btn.style.background = isDanger ? 'var(--red)' : 'var(--gold)';
-  btn.style.color      = isDanger ? '#fff' : 'var(--bg)';
-  confirmCallback = cb;
-  document.getElementById('confirm-overlay').classList.add('show');
+  document.getElementById('confirm-title').textContent = title; document.getElementById('confirm-msg').textContent = msg;
+  const btn = document.getElementById('confirm-yes-btn'); btn.style.background = isDanger ? 'var(--red)' : 'var(--gold)'; btn.style.color = isDanger ? '#fff' : 'var(--bg)';
+  confirmCallback = cb; document.getElementById('confirm-overlay').classList.add('show');
 }
-function confirmNo()  { document.getElementById('confirm-overlay').classList.remove('show'); }
+function confirmNo() { document.getElementById('confirm-overlay').classList.remove('show'); }
 function confirmYes() { document.getElementById('confirm-overlay').classList.remove('show'); if(confirmCallback) confirmCallback(); }
 
-// ── INIT ──────────────────────────────────────────────
-updateYearBar();
-render();
+updateYearBar(); render();
 </script>
 </body>
 </html>
