@@ -75,15 +75,23 @@
   .record-actions{display:flex;gap:8px;margin-top:10px;padding-top:8px;border-top:1px solid var(--border)}
   .rec-btn{flex:1;padding:8px 0;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);font-size:12px;cursor:pointer}
 
-  .unit-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:14px 16px}
-  .unit-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px 8px;text-align:center;cursor:pointer}
+  /* 樓層模擬結構 */
+  .floor-layout { display: flex; flex-direction: column; gap: 12px; padding: 14px 16px; }
+  .floor-row { display: grid; grid-template-columns: 1fr 40px 1fr; gap: 8px; align-items: center; }
+  
+  /* 電梯區域 */
+  .elevator-shaft { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .elevator-icon { width: 24px; height: 24px; fill: var(--gold-dim); opacity: 0.6; animation: lift-pulse 3s infinite ease-in-out; }
+  @keyframes lift-pulse { 0%, 100% { opacity: 0.4; transform: scale(0.9); } 50% { opacity: 0.8; transform: scale(1.1); fill: var(--gold); } }
+
+  .unit-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 6px;text-align:center;cursor:pointer}
   .unit-card.all-paid{border-color:var(--green);background:var(--green-bg)}
-  .unit-name{font-size:14px;font-weight:600;margin-bottom:10px;color:var(--gold-light)}
-  .unit-dots{display:flex;flex-wrap:wrap;gap:3px;justify-content:center;margin-bottom:12px}
-  .dot{width:6px;height:6px;border-radius:50%}
+  .unit-name{font-size:13px;font-weight:600;margin-bottom:6px;color:var(--gold-light)}
+  .unit-dots{display:flex;flex-wrap:wrap;gap:2px;justify-content:center;margin-bottom:8px}
+  .dot{width:5px;height:5px;border-radius:50%}
   .dot.paid{background:var(--green)}
   .dot.unpaid{background:var(--border)}
-  .latest-date-label { font-family: 'DM Mono'; font-size: 15px; font-weight: 700; color: var(--purple); background: rgba(216,180,254,0.1); padding: 4px 10px; border-radius: 6px; display: inline-block; }
+  .latest-date-label { font-family: 'DM Mono'; font-size: 13px; font-weight: 700; color: var(--purple); background: rgba(216,180,254,0.1); padding: 3px 6px; border-radius: 4px; display: inline-block; }
 
   #footer-version{background:var(--bg2);border-top:1px solid var(--border);padding:8px 16px calc(var(--safe-bot) + 8px);display:flex;align-items:center;justify-content:center;flex-shrink:0}
   .footer-ver-btn{background:none;border:none;color:var(--text2);font-family:'DM Mono';font-size:10px;cursor:pointer}
@@ -100,10 +108,6 @@
   .sheet-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:12px auto 16px}
   .sheet-title{font-family:'Noto Serif TC',serif;font-size:17px;font-weight:700;color:var(--gold);margin-bottom:18px;text-align:center}
   
-  .version-item { padding: 12px 0; border-bottom: 1px solid var(--border); }
-  .version-tag { background: var(--green-bg); color: var(--green); font-size: 10px; padding: 2px 6px; border-radius: 4px; font-family: 'DM Mono'; }
-  .version-notes { font-size: 12px; margin-top: 6px; color: var(--text); line-height: 1.6; list-style: none; }
-
   .form-group{margin-bottom:14px}
   .form-label{font-size:12px;color:var(--text2);margin-bottom:6px;display:block}
   .form-input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-size:15px;outline:none}
@@ -141,7 +145,7 @@
   </div>
 
   <div class="version-bar">
-    <button class="version-btn" onclick="openVersionSheet()">v1.9.1 · 更新履歷</button>
+    <button class="version-btn" onclick="openVersionSheet()">v1.9.2 · 更新履歷</button>
     <button class="share-btn" onclick="shareStatus()">📤 分享報表</button>
   </div>
 
@@ -165,13 +169,14 @@
     <div id="tab-records"><div class="section"><div class="section-title">最新帳務</div><div id="records-list"></div></div></div>
     <div id="tab-units" style="display:none">
       <div id="unpaid-alert-area"></div>
-      <div class="section"><div class="section-title">住戶最近繳費日</div><div class="unit-grid" id="unit-grid"></div></div>
+      <div class="section"><div class="section-title">大樓樓層模擬 (中間為電梯)</div></div>
+      <div class="floor-layout" id="unit-grid"></div>
     </div>
     <div id="tab-history" style="display:none"><div class="section"><div class="section-title">全期收支明細</div><div id="history-list"></div></div></div>
   </div>
 
   <div id="footer-version">
-    <button class="footer-ver-btn" onclick="openVersionSheet()">偉士大樓管委費系統 · v1.9.1</button>
+    <button class="footer-ver-btn" onclick="openVersionSheet()">偉士大樓管委費系統 · v1.9.2</button>
   </div>
 
   <div id="fab-area">
@@ -187,19 +192,23 @@
 <div class="confirm-overlay" id="confirm-overlay"><div class="confirm-box"><div class="confirm-title" id="confirm-title">確認</div><div class="confirm-msg" id="confirm-msg"></div><div class="confirm-btns"><button class="btn btn-cancel" onclick="confirmNo()">取消</button><button class="btn btn-ok" id="confirm-yes-btn" onclick="confirmYes()">確認</button></div></div></div>
 <div class="overlay" id="version-overlay" onclick="closeIfOutside(event,'version-overlay')">
   <div class="sheet"><div class="sheet-handle"></div><div class="sheet-title">更新履歷</div>
-    <div class="version-item"><span class="version-tag">v1.9.1</span><div class="version-notes"><li>優化「待繳戶」清單顯示，不再黏在一起</li><li>優化「分享報表」內容，僅顯示最新繳費日期</li><li>註冊 Stale-While-Revalidate 更新機制</li></div></div>
-    <div class="version-item"><span class="version-tag">v1.9.0</span><div class="version-notes"><li>新增環境資訊（定位與體感溫度抓取）</li></div></div>
+    <div class="version-item"><span class="version-tag">v1.9.2</span><div class="version-notes"><li>新增住戶管理樓層模擬，視覺化中間電梯位置</li><li>優化電梯區域動畫效果</li></div></div>
     <button class="btn btn-cancel" style="width:100%;margin-top:10px" onclick="closeSheet('version')">關閉</button>
   </div>
 </div>
 
 <script>
-const UNIT_LEFT  = ['426-6','426-5','426-4','426-3','426-2','426-1'];
-const UNIT_RIGHT = ['424-6','424-5','424-4','424-3','424-2','424-1'];
-const UNITS = [];
-for (let i = 0; i < 6; i++) { UNITS.push(UNIT_LEFT[i]); UNITS.push(UNIT_RIGHT[i]); }
 const INIT_BALANCE = 97246;
 const MONTHS = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+const FLOORS = [
+  { left: '426-6', right: '424-6' },
+  { left: '426-5', right: '424-5' },
+  { left: '426-4', right: '424-4' },
+  { left: '426-3', right: '424-3' },
+  { left: '426-2', right: '424-2' },
+  { left: '426-1', right: '424-1' }
+];
+const UNITS = FLOORS.flatMap(f => [f.left, f.right]);
 
 function loadState() {
   try { const s = localStorage.getItem('weishi-state-v2'); if (s) return JSON.parse(s); } catch(e) {}
@@ -222,7 +231,7 @@ function updateClock() {
 setInterval(updateClock, 1000); updateClock();
 
 async function updateWeather() {
-  if (!navigator.geolocation) { document.getElementById('loc-disp').textContent = '不支援定位'; return; }
+  if (!navigator.geolocation) return;
   navigator.geolocation.getCurrentPosition(async (pos) => {
     try {
       const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}&current_weather=true&hourly=apparent_temperature`);
@@ -230,8 +239,8 @@ async function updateWeather() {
       document.getElementById('temp-disp').textContent = `${data.hourly.apparent_temperature[0]}°C (體感)`;
       const lat = pos.coords.latitude; const lon = pos.coords.longitude;
       document.getElementById('loc-disp').textContent = (lat > 23.6 && lat < 23.8 && lon > 120.4 && lon < 120.6) ? '斗六市' : '目前位置';
-    } catch (e) { document.getElementById('loc-disp').textContent = '抓取失敗'; }
-  }, () => { document.getElementById('loc-disp').textContent = '未授權定位'; });
+    } catch (e) {}
+  });
 }
 updateWeather();
 
@@ -262,16 +271,26 @@ function renderRecords() {
     </div>`).join('');
 }
 
+function getUnitHTML(u) {
+  const p = state.payments[u] || {};
+  const paidMonths = MONTHS.filter(m => p[m]);
+  let dateDisp = '<div style="font-size:11px;opacity:0.3">無紀錄</div>';
+  if (paidMonths.length > 0) dateDisp = `<div class="latest-date-label">${p[paidMonths[paidMonths.length-1]].substring(5)}</div>`;
+  const dots = MONTHS.map(m => `<div class="dot ${p[m]?'paid':'unpaid'}"></div>`).join('');
+  return `<div class="unit-card ${paidMonths.length===12?'all-paid':''}" onclick="openUnitSheet('${u}')"><div class="unit-name">${u}</div><div class="unit-dots">${dots}</div>${dateDisp}</div>`;
+}
+
 function renderUnits() {
   const el = document.getElementById('unit-grid');
-  el.innerHTML = UNITS.map(u => {
-    const p = state.payments[u] || {};
-    const paidMonths = MONTHS.filter(m => p[m]);
-    let dateDisp = '<div style="font-size:11px;opacity:0.5">無紀錄</div>';
-    if (paidMonths.length > 0) dateDisp = `<div class="latest-date-label">${p[paidMonths[paidMonths.length-1]].substring(5)}</div>`;
-    const dots = MONTHS.map(m => `<div class="dot ${p[m]?'paid':'unpaid'}"></div>`).join('');
-    return `<div class="unit-card" onclick="openUnitSheet('${u}')"><div class="unit-name">${u}</div><div class="unit-dots">${dots}</div>${dateDisp}</div>`;
-  }).join('');
+  const elevatorSVG = `<svg class="elevator-icon" viewBox="0 0 24 24"><path d="M7,2L17,2A2,2 0 0,1 19,4V20A2,2 0 0,1 17,22H7A2,2 0 0,1 5,20V4A2,2 0 0,1 7,2M7,4V20H17V4H7M8,6H11V9H8V6M13,6H16V9H13V6M8,11H11V14H8V11M13,11H16V14H13V11M8,16H11V19H8V16M13,16H16V19H13V16Z" /></svg>`;
+  
+  el.innerHTML = FLOORS.map(f => `
+    <div class="floor-row">
+      ${getUnitHTML(f.left)}
+      <div class="elevator-shaft">${elevatorSVG}</div>
+      ${getUnitHTML(f.right)}
+    </div>
+  `).join('');
 }
 
 function renderHistory() {
@@ -299,6 +318,7 @@ function switchTab(tab) {
 }
 
 function openSheet(type, record) {
+  if (type === 'version') { document.getElementById('version-overlay').classList.add('show'); return; }
   editingId = record ? record.id : null; const today = new Date().toISOString().split('T')[0];
   if(!['date-picker','unit','version'].includes(type)) {
     document.getElementById(type+'-date').value = record ? record.date : today;
@@ -352,19 +372,6 @@ function showConfirm(title, msg, cb, isDanger=false) {
 function confirmNo() { document.getElementById('confirm-overlay').classList.remove('show'); }
 function confirmYes() { document.getElementById('confirm-overlay').classList.remove('show'); if(confirmCallback) confirmCallback(); }
 
-// ── SW 自動重整機制 ─────────────────
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js').then(reg => {
-    reg.addEventListener('updatefound', () => {
-      const nw = reg.installing;
-      nw.addEventListener('statechange', () => {
-        if (nw.state === 'installed' && navigator.serviceWorker.controller) {
-          console.log('新版本已就緒，請手動重新整理');
-        }
-      });
-    });
-  });
-}
 render();
 </script>
 </body>
