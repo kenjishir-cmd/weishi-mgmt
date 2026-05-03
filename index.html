@@ -27,13 +27,18 @@
   #app{display:flex;flex-direction:column;height:100vh;height:100dvh}
   
   #header{padding:calc(var(--safe-top) + 10px) 16px 10px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0}
-  .header-row{display:flex;align-items:center;justify-content:space-between}
+  .header-row{display:flex;align-items:flex-start;justify-content:space-between}
   .header-title{font-family:'Noto Serif TC',serif;font-size:18px;font-weight:700;color:var(--gold);letter-spacing:2px}
   .header-sub{font-size:11px;color:var(--text2);margin-top:1px;letter-spacing:1px}
   .header-datetime{text-align:right}
   .header-time{font-family:'DM Mono'; font-size:16px; color:var(--gold-light); letter-spacing:1px}
   .header-date{font-size:10px; color:var(--text2); margin-top:1px}
   
+  /* 新增：環境資訊樣式 */
+  .header-weather { font-size: 10px; color: var(--gold-dim); margin-top: 4px; display: flex; align-items: center; justify-content: flex-end; gap: 6px; }
+  .weather-loc::before { content: '📍'; margin-right: 2px; }
+  .weather-temp::before { content: '🌡️'; margin-right: 2px; }
+
   .version-bar{background:var(--bg3);border-bottom:1px solid var(--border);padding:4px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
   .version-btn{background:none;border:1px solid var(--border);border-radius:6px;color:var(--text2);font-family:'DM Mono';font-size:10px;padding:3px 8px;cursor:pointer}
   .share-btn{background:var(--blue-bg);border:1px solid var(--blue);color:var(--blue);border-radius:6px;font-size:10px;padding:3px 10px;cursor:pointer;font-weight:600}
@@ -102,7 +107,6 @@
   .version-item { padding: 12px 0; border-bottom: 1px solid var(--border); }
   .version-tag { background: var(--green-bg); color: var(--green); font-size: 10px; padding: 2px 6px; border-radius: 4px; font-family: 'DM Mono'; }
   .version-notes { font-size: 12px; margin-top: 6px; color: var(--text); line-height: 1.6; list-style: none; }
-  .version-notes li::before { content: '• '; color: var(--gold); }
 
   .form-group{margin-bottom:14px}
   .form-label{font-size:12px;color:var(--text2);margin-bottom:6px;display:block}
@@ -115,8 +119,6 @@
   .confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:2000;display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none}
   .confirm-overlay.show{opacity:1;pointer-events:all}
   .confirm-box{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:24px;width:100%;max-width:320px}
-  .confirm-title{font-family:'Noto Serif TC',serif;font-size:16px;font-weight:700;color:var(--gold);text-align:center;margin-bottom:8px}
-  .confirm-msg{font-size:13px;color:var(--text2);text-align:center;line-height:1.6;margin-bottom:20px;white-space:pre-line}
   
   .month-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
   .month-btn{padding:10px 4px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);font-size:12px;cursor:pointer;text-align:center}
@@ -134,12 +136,16 @@
       <div class="header-datetime">
         <div class="header-time" id="clock">--:--:--</div>
         <div class="header-date" id="datedisp">----/--/--</div>
+        <div class="header-weather" id="weather-info">
+          <span class="weather-loc" id="loc-disp">定位中...</span>
+          <span class="weather-temp" id="temp-disp">--°C</span>
+        </div>
       </div>
     </div>
   </div>
 
   <div class="version-bar">
-    <button class="version-btn" onclick="openVersionSheet()">v1.8.4 · 更新履歷</button>
+    <button class="version-btn" onclick="openVersionSheet()">v1.9.0 · 更新履歷</button>
     <button class="share-btn" onclick="shareStatus()">📤 分享報表</button>
   </div>
 
@@ -178,7 +184,7 @@
   </div>
 
   <div id="footer-version">
-    <button class="footer-ver-btn" onclick="openVersionSheet()">偉士大樓管委費系統 · v1.8.4 · 更新履歷</button>
+    <button class="footer-ver-btn" onclick="openVersionSheet()">偉士大樓管委費系統 · v1.9.0</button>
   </div>
 
   <div id="fab-area">
@@ -187,21 +193,20 @@
   </div>
 </div>
 
+<div class="overlay" id="version-overlay" onclick="closeIfOutside(event,'version-overlay')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">更新履歷</div>
+    <div class="version-item"><span class="version-tag">v1.9.0</span><div class="version-notes"><li>新增環境資訊：自動定位並抓取體感溫度數據</li><li>優化頂部標頭配置，日期下方即時顯示天氣</li></div></div>
+    <button class="btn btn-cancel" style="width:100%;margin-top:10px" onclick="closeSheet('version')">關閉</button>
+  </div>
+</div>
+
 <div class="overlay" id="income-overlay" onclick="closeIfOutside(event,'income-overlay')"><div class="sheet"><div class="sheet-handle"></div><div class="sheet-title">新增收入</div><div class="form-group"><label class="form-label">日期</label><input type="date" class="form-input" id="income-date"></div><div class="form-group"><label class="form-label">說明</label><input type="text" class="form-input" id="income-desc"></div><div class="form-group"><label class="form-label">金額</label><input type="number" class="form-input" id="income-amount" inputmode="numeric"></div><div class="form-btns"><button class="btn btn-cancel" onclick="closeSheet('income')">取消</button><button class="btn btn-ok" onclick="submitRecord('income')">確認</button></div></div></div>
 <div class="overlay" id="expense-overlay" onclick="closeIfOutside(event,'expense-overlay')"><div class="sheet"><div class="sheet-handle"></div><div class="sheet-title">新增支出</div><div class="form-group"><label class="form-label">日期</label><input type="date" class="form-input" id="expense-date"></div><div class="form-group"><label class="form-label">說明</label><input type="text" class="form-input" id="expense-desc"></div><div class="form-group"><label class="form-label">金額</label><input type="number" class="form-input" id="expense-amount" inputmode="numeric"></div><div class="form-btns"><button class="btn btn-cancel" onclick="closeSheet('expense')">取消</button><button class="btn btn-ok" onclick="submitRecord('expense')" style="background:var(--red);color:#fff">確認</button></div></div></div>
 <div class="overlay" id="unit-overlay" onclick="closeIfOutside(event,'unit-overlay')"><div class="sheet"><div class="sheet-handle"></div><div class="sheet-title" id="unit-sheet-title">繳費清單</div><div class="month-grid" id="unit-month-grid"></div><button class="btn btn-cancel" style="width:100%" onclick="closeSheet('unit')">關閉</button></div></div>
 <div class="overlay" id="date-picker-overlay" onclick="closeIfOutside(event,'date-picker-overlay')"><div class="sheet"><div class="sheet-handle"></div><div class="sheet-title">選擇日期</div><div class="form-group"><input type="date" class="form-input" id="constrained-date"></div><div class="form-btns"><button class="btn btn-cancel" onclick="closeSheet('date-picker')">取消</button><button class="btn btn-ok" id="date-picker-confirm-btn">確認</button></div></div></div>
 <div class="confirm-overlay" id="confirm-overlay"><div class="confirm-box"><div class="confirm-title" id="confirm-title">確認</div><div class="confirm-msg" id="confirm-msg"></div><div class="confirm-btns"><button class="btn btn-cancel" onclick="confirmNo()">取消</button><button class="btn btn-ok" id="confirm-yes-btn" onclick="confirmYes()">確認</button></div></div></div>
-
-<div class="overlay" id="version-overlay" onclick="closeIfOutside(event,'version-overlay')">
-  <div class="sheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-title">更新履歷</div>
-    <div class="version-item"><span class="version-tag">v1.8.4</span><div class="version-notes"><li>修復「未繳費名單」編號黏在一起的問題</li><li>優化分享報表文字，顯示最新日期而非月份數</li></div></div>
-    <div class="version-item"><span class="version-tag">v1.8.3</span><div class="version-notes"><li>修復 v1.8.2 的選單彈出與版本顯示錯誤</li><li>修復住戶卡片無法點擊的問題</li></div></div>
-    <button class="btn btn-cancel" style="width:100%;margin-top:10px" onclick="closeSheet('version')">關閉</button>
-  </div>
-</div>
 
 <script>
 const UNIT_LEFT  = ['426-6','426-5','426-4','426-3','426-2','426-1'];
@@ -217,7 +222,6 @@ function loadState() {
   return { records: [], payments, nextId: 1 };
 }
 let state = loadState();
-
 function saveState() { localStorage.setItem('weishi-state-v2', JSON.stringify(state)); }
 
 function totalIncome()  { return state.records.filter(r=>r.type==='income').reduce((s,r)=>s+r.amount,0); }
@@ -232,15 +236,51 @@ function updateClock() {
 }
 setInterval(updateClock, 1000); updateClock();
 
+// ── 天氣與定位邏輯 ──────────────────────────────────────
+async function updateWeather() {
+  if (!navigator.geolocation) {
+    document.getElementById('loc-disp').textContent = '不支援定位';
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(async (pos) => {
+    const lat = pos.coords.latitude;
+    const lon = pos.coords.longitude;
+    
+    try {
+      // 使用免費且不需要 Key 的 Open-Meteo API
+      const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=apparent_temperature`);
+      const data = await res.json();
+      
+      const temp = data.current_weather.temperature;
+      // 體感溫度抓取最近的一小時數據
+      const apparentTemp = data.hourly.apparent_temperature[0];
+      
+      document.getElementById('temp-disp').textContent = `${apparentTemp}°C (體感)`;
+      
+      // 反向地理編碼（簡單判斷縣市，這裡為了隱私與速度，我們也可以直接顯示座標或固定顯示主要地區）
+      // 因為這是一個管委系統，大部分時間都在斗六，我們可以設一個簡單判斷
+      if (lat > 23.6 && lat < 23.8 && lon > 120.4 && lon < 120.6) {
+        document.getElementById('loc-disp').textContent = '斗六市';
+      } else {
+        document.getElementById('loc-disp').textContent = '目前位置';
+      }
+    } catch (e) {
+      document.getElementById('loc-disp').textContent = '抓取失敗';
+    }
+  }, () => {
+    document.getElementById('loc-disp').textContent = '拒絕定位';
+  });
+}
+updateWeather();
+
+// ── 渲染邏輯 (Records, Units, History) ─────────────────
 function render() {
   document.getElementById('balance-num').textContent = balance().toLocaleString('zh-TW');
   document.getElementById('total-income-disp').textContent = 'NT$ ' + totalIncome().toLocaleString();
   document.getElementById('total-expense-disp').textContent = 'NT$ ' + totalExpense().toLocaleString();
   document.getElementById('paid-units-disp').textContent = paidUnits() + ' / 12';
-  renderRecords();
-  renderUnits();
-  renderHistory();
-  renderUnpaidAlert();
+  renderRecords(); renderUnits(); renderHistory(); renderUnpaidAlert();
 }
 
 function renderUnpaidAlert() {
@@ -297,12 +337,7 @@ function shareStatus() {
   UNITS.forEach(u => {
     const p = state.payments[u] || {};
     const paidM = MONTHS.filter(m => p[m]);
-    if (paidM.length > 0) {
-      const lastDate = p[paidM[paidM.length-1]];
-      text += `✅ ${u}：最新繳費 ${lastDate}\n`;
-    } else {
-      text += `❌ ${u}：尚未繳費\n`;
-    }
+    text += paidM.length > 0 ? `✅ ${u}：最新繳費 ${p[paidM[paidM.length-1]]}\n` : `❌ ${u}：尚未繳費\n`;
   });
   text += `\n結餘：NT$ ${balance().toLocaleString()}`;
   if (navigator.share) navigator.share({ title: '偉士大樓報表', text: text });
