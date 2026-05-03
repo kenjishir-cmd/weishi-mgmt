@@ -52,9 +52,6 @@
   .tab.active{color:var(--gold);border-bottom-color:var(--gold)}
   .tab:active{background:var(--bg3)}
   #content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(var(--safe-bot) + 124px)}
-  #content::-webkit-scrollbar{width:3px}
-  #content::-webkit-scrollbar-track{background:transparent}
-  #content::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
   .section{padding:14px 16px 0}
   .section-title{font-size:11px;color:var(--text2);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
   .record{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 14px 10px;margin-bottom:10px;animation:fadeIn .2s ease}
@@ -336,31 +333,6 @@
   </div>
 </div>
 
-<div class="version-overlay" id="version-overlay" onclick="closeVersionIfOutside(event)">
-  <div class="version-sheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-title">更新履歷</div>
-    <div class="version-item">
-      <div><span class="version-tag latest">v1.7.0</span></div>
-      <div class="version-date">2026-05-03</div>
-      <ul class="version-notes">
-        <li>優化顯示：住戶繳費格子內直接顯示繳費日期（月-日）</li>
-        <li>取消提醒：在取消繳費時，會提示原紀錄日期，防止誤操作</li>
-        <li>介面調整：優化月份格子字體，確保日期顯示美觀</li>
-      </ul>
-    </div>
-    <div class="version-item">
-      <div><span class="version-tag">v1.6.0</span></div>
-      <div class="version-date">2026-05-03</div>
-      <ul class="version-notes">
-        <li>日期限制：點擊月份後，只能選擇該月份內的日期</li>
-        <li>繳費狀態會儲存具體繳納日期</li>
-      </ul>
-    </div>
-    <button class="btn btn-cancel" style="width:100%;margin-top:8px" onclick="closeVersionSheet()">關閉</button>
-  </div>
-</div>
-
 <script>
 const UNIT_LEFT  = ['426-6','426-5','426-4','426-3','426-2','426-1'];
 const UNIT_RIGHT = ['424-6','424-5','424-4','424-3','424-2','424-1'];
@@ -440,13 +412,26 @@ function renderUnits() {
   const el = document.getElementById('unit-grid');
   el.innerHTML = UNITS.map(u => {
     const p = state.payments[u] || {};
-    const paid = MONTHS.filter(m => p[m]).length;
-    const allPaid = paid === 12;
+    const paidMonths = MONTHS.filter(m => p[m]);
+    const paidCount = paidMonths.length;
+    const allPaid = paidCount === 12;
+    
+    let lastDateDisp = '';
+    if (paidCount > 0) {
+      const lastMonth = paidMonths[paidCount - 1];
+      const d = p[lastMonth].split('-');
+      lastDateDisp = `<div style="font-size:9px; color:var(--text2); margin-top:2px;">最新:${d[1]}-${d[2]}</div>`;
+    }
+
     const dots = MONTHS.map(m => `<div class="dot ${p[m]?'paid':'unpaid'}"></div>`).join('');
-    return `<div class="unit-card ${allPaid?'all-paid':paid===0?'has-unpaid':''}" onclick="openUnitSheet('${u}')">
+    
+    return `<div class="unit-card ${allPaid?'all-paid':paidCount===0?'has-unpaid':''}" onclick="openUnitSheet('${u}')">
       <div class="unit-name">${u}</div>
       <div class="unit-dots">${dots}</div>
-      <div class="unit-status ${allPaid?'ok':paid===0?'bad':''}">${allPaid?'全繳清':paid===0?'未繳費':paid+'/12月'}</div>
+      <div class="unit-status ${allPaid?'ok':paidCount===0?'bad':''}">
+        ${allPaid?'全繳清':paidCount===0?'未繳費':paidCount+'/12月'}
+      </div>
+      ${lastDateDisp}
     </div>`;
   }).join('');
 }
@@ -558,7 +543,7 @@ function renderUnitMonths(unit) {
     let dateStr = '－';
     if (isPaid) {
         const d = p[m].split('-');
-        dateStr = d[1] + '-' + d[2]; // 顯示為 05-03 格式
+        dateStr = d[1] + '-' + d[2];
     }
     return `<button class="month-btn ${isPaid?'paid':''}" onclick="toggleMonth('${unit}','${m}')">
       ${m}<br><span class="month-date-badge">${isPaid ? '✓ '+dateStr : '－'}</span>
