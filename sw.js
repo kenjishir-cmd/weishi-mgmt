@@ -1,12 +1,14 @@
 // ── 偉士大樓 萬用自動更新 Service Worker ──────────────────────
-const CACHE_NAME = 'weishi-mgmt-universal-cache';
+// 此版本一旦設定完成，除非要更改快取策略，否則不需再改動。
 
-// 1. 安裝階段：不設定特定的版本清單，讓它在 Fetch 時動態捕捉
+const CACHE_NAME = 'weishi-mgmt-universal-v1';
+
+// 1. 安裝階段：立刻接管
 self.addEventListener('install', e => {
-  self.skipWaiting(); 
+  self.skipWaiting();
 });
 
-// 2. 激活階段：清理不屬於目前 CACHE_NAME 的舊快取
+// 2. 激活階段：清理不屬於目前 CACHE_NAME 的舊快取垃圾
 self.addEventListener('activate', e => {
   e.waitUntil(
     caches.keys().then(keys => {
@@ -27,20 +29,21 @@ self.addEventListener('fetch', e => {
 
   e.respondWith(
     caches.match(e.request).then(cachedResponse => {
-      // 建立一個網路請求，用來更新快取
+      // 發起網路請求以獲取最新版本
       const networkFetch = fetch(e.request).then(networkResponse => {
         if (networkResponse && networkResponse.status === 200) {
           const cacheCopy = networkResponse.clone();
+          // 將抓到的最新版存入快取，蓋掉舊的
           caches.open(CACHE_NAME).then(cache => {
             cache.put(e.request, cacheCopy);
           });
         }
         return networkResponse;
       }).catch(() => {
-        // 斷網時的靜默錯誤處理
+        // 斷網時靜默處理，不報錯
       });
 
-      // 如果有快取就先給快取（秒開），沒有就等網路請求
+      // 如果手機裡有快取就給快取（秒開），沒有就等網路抓回來
       return cachedResponse || networkFetch;
     })
   );
