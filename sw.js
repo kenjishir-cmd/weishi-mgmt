@@ -1,5 +1,6 @@
-// ── 偉士大樓 Service Worker ─────────────────────────────
-const CACHE_VERSION = 'weishi-v3';
+// ── 偉士大樓 Service Worker v4 ─────────────────────────
+// ⚠️ 每次更新 index.html，請同時把下面數字加一（v4 → v5 → v6…）
+const CACHE_VERSION = 'weishi-v4';
 const CACHE_URLS = [
   './',
   './index.html',
@@ -26,15 +27,13 @@ self.addEventListener('activate', e => {
       Promise.all(
         keys.filter(k => k !== CACHE_VERSION).map(k => caches.delete(k))
       )
-    )
+    ).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
   if (!e.request.url.startsWith('http')) return;
-
   e.respondWith(
     caches.match(e.request).then(cached => {
       if (cached) {
