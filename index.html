@@ -25,6 +25,8 @@
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
   html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-serif;overflow:hidden}
   #app{display:flex;flex-direction:column;height:100vh;height:100dvh}
+  
+  /* Header */
   #header{padding:calc(var(--safe-top) + 10px) 16px 10px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0}
   .header-row{display:flex;align-items:center;justify-content:space-between}
   .header-title{font-family:'Noto Serif TC',serif;font-size:18px;font-weight:700;color:var(--gold);letter-spacing:2px}
@@ -32,9 +34,13 @@
   .header-datetime{text-align:right}
   .header-time{font-family:'DM Mono'; font-size:16px; color:var(--gold-light); letter-spacing:1px}
   .header-date{font-size:10px; color:var(--text2); margin-top:1px}
+  
+  /* Version Bar */
   .version-bar{background:var(--bg3);border-bottom:1px solid var(--border);padding:4px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
   .version-btn{background:none;border:1px solid var(--border);border-radius:6px;color:var(--text2);font-family:'DM Mono';font-size:10px;padding:3px 8px;cursor:pointer}
   .share-btn{background:var(--blue-bg);border:1px solid var(--blue);color:var(--blue);border-radius:6px;font-size:10px;padding:3px 10px;cursor:pointer;font-weight:600}
+
+  /* Hero */
   #balance-hero{background:linear-gradient(135deg,#161b22 0%,#1a1f2a 100%);border-bottom:1px solid var(--border);padding:16px 16px 14px;flex-shrink:0}
   .balance-label{font-size:11px;color:var(--text2);letter-spacing:2px;margin-bottom:4px}
   .balance-amount{font-family:'DM Mono',monospace;font-size:36px;color:var(--gold-light);line-height:1}
@@ -43,12 +49,18 @@
   .balance-stat{flex:1}
   .balance-stat-label{font-size:10px;color:var(--text2)}
   .balance-stat-val{font-family:'DM Mono';font-size:13px;margin-top:2px}
+
+  /* Tabs */
   #tabs{display:flex;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0}
-  .tab{flex:1;padding:11px 0;font-size:13px;font-weight:500;color:var(--text2);text-align:center;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s}
+  .tab{flex:1;padding:11px 0;font-size:13px;font-weight:500;color:var(--text2);text-align:center;cursor:pointer;border-bottom:2px solid transparent;transition:all 0.2s}
   .tab.active{color:var(--gold);border-bottom-color:var(--gold)}
-  #content{flex:1;overflow-y:auto;padding-bottom:calc(var(--safe-bot) + 120px)}
+
+  /* Content Area */
+  #content{flex:1;overflow-y:auto;padding-bottom:calc(var(--safe-bot) + 140px)}
   .section{padding:14px 16px 0}
   .section-title{font-size:11px;color:var(--text2);letter-spacing:2px;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+
+  /* Records & Lists */
   .record{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px}
   .record-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
   .record-desc{font-size:14px;font-weight:500;line-height:1.4;flex:1}
@@ -63,43 +75,41 @@
   .record-balance{font-size:11px;color:var(--text2);margin-top:4px;font-family:'DM Mono'}
   .record-actions{display:flex;gap:8px;margin-top:10px;padding-top:8px;border-top:1px solid var(--border)}
   .rec-btn{flex:1;padding:8px 0;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);font-size:12px;cursor:pointer}
+
+  /* Unit Grid */
   .unit-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:14px 16px}
-  .unit-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px 8px;text-align:center;cursor:pointer}
+  .unit-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px 8px;text-align:center;cursor:pointer; position: relative; z-index: 1;}
+  .unit-card:active{background:var(--bg3)}
   .unit-card.all-paid{border-color:var(--green);background:var(--green-bg)}
   .unit-name{font-size:14px;font-weight:600;margin-bottom:10px;color:var(--gold-light)}
   .unit-dots{display:flex;flex-wrap:wrap;gap:3px;justify-content:center;margin-bottom:12px}
   .dot{width:6px;height:6px;border-radius:50%}
   .dot.paid{background:var(--green)}
   .dot.unpaid{background:var(--border)}
-  
-  /* 紫色加大的日期標籤 */
-  .latest-date-label { 
-    font-family: 'DM Mono';
-    font-size: 15px; 
-    font-weight: 700;
-    color: var(--purple);
-    background: rgba(216,180,254,0.1);
-    padding: 4px 10px;
-    border-radius: 6px;
-    display: inline-block;
-  }
-  .no-date-label { font-size: 11px; color: var(--text2); opacity: 0.5; }
+  .latest-date-label { font-family: 'DM Mono'; font-size: 15px; font-weight: 700; color: var(--purple); background: rgba(216,180,254,0.1); padding: 4px 10px; border-radius: 6px; display: inline-block; }
 
-  #fab-area{position:fixed;left:0;right:0;bottom:calc(var(--safe-bot) + 38px);display:flex;justify-content:center;gap:12px;padding:0 16px}
-  .fab{flex:1;max-width:180px;padding:14px 0;border:none;border-radius:14px;font-size:14px;font-weight:600;cursor:pointer}
+  /* Footer Version */
+  #footer-version{background:var(--bg2);border-top:1px solid var(--border);padding:8px 16px calc(var(--safe-bot) + 8px);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .footer-ver-btn{background:none;border:none;color:var(--text2);font-family:'DM Mono';font-size:10px;cursor:pointer}
+
+  /* FAB Area */
+  #fab-area{position:fixed;left:0;right:0;bottom:calc(var(--safe-bot) + 45px);display:flex;justify-content:center;gap:12px;padding:0 16px; z-index: 50;}
+  .fab{flex:1;max-width:180px;padding:14px 0;border:none;border-radius:14px;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,0.5)}
   .fab-income{background:var(--green);color:#0d1117}
   .fab-expense{background:var(--red);color:#fff}
-  
-  .unpaid-alert-box { background: var(--red-bg); border: 1px solid var(--red); border-radius: 10px; padding: 12px; margin: 0 16px 12px; }
-  .unpaid-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
-  .unpaid-tag { font-size: 12px; border: 1px solid rgba(248,81,73,0.3); color: var(--red); padding: 2px 8px; border-radius: 4px; }
 
-  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:100;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .25s}
+  /* Overlays & Sheets */
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1000;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .25s}
   .overlay.show{opacity:1;pointer-events:all}
   .sheet{background:var(--bg2);border-radius:20px 20px 0 0;border-top:1px solid var(--border);padding:0 16px calc(var(--safe-bot) + 16px);width:100%;max-height:90vh;overflow-y:auto;transform:translateY(40px);transition:transform .3s}
   .overlay.show .sheet{transform:translateY(0)}
   .sheet-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:12px auto 16px}
   .sheet-title{font-family:'Noto Serif TC',serif;font-size:17px;font-weight:700;color:var(--gold);margin-bottom:18px;text-align:center}
+  
+  .version-item { padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .version-tag { background: var(--green-bg); color: var(--green); font-size: 10px; padding: 2px 6px; border-radius: 4px; font-family: 'DM Mono'; }
+  .version-notes { font-size: 12px; margin-top: 6px; color: var(--text); line-height: 1.6; list-style: none; }
+
   .form-group{margin-bottom:14px}
   .form-label{font-size:12px;color:var(--text2);margin-bottom:6px;display:block}
   .form-input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-size:15px;outline:none}
@@ -107,9 +117,13 @@
   .btn{flex:1;padding:14px;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer}
   .btn-cancel{background:var(--bg3);color:var(--text2);border:1px solid var(--border)}
   .btn-ok{background:var(--gold);color:var(--bg)}
-  .confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none}
+  
+  .confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:2000;display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none}
   .confirm-overlay.show{opacity:1;pointer-events:all}
   .confirm-box{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:24px;width:100%;max-width:320px}
+  .confirm-title{font-family:'Noto Serif TC',serif;font-size:16px;font-weight:700;color:var(--gold);text-align:center;margin-bottom:8px}
+  .confirm-msg{font-size:13px;color:var(--text2);text-align:center;line-height:1.6;margin-bottom:20px;white-space:pre-line}
+  
   .month-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
   .month-btn{padding:10px 4px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);font-size:12px;cursor:pointer;text-align:center}
   .month-btn.paid{background:var(--green-bg);border-color:var(--green);color:var(--green);font-weight:600}
@@ -131,25 +145,25 @@
   </div>
 
   <div class="version-bar">
-    <button class="version-btn" onclick="openVersionSheet()">v1.8.2 · 更新履歷</button>
+    <button class="version-btn" onclick="openVersionSheet()">v1.8.3 · 更新履歷</button>
     <button class="share-btn" onclick="shareStatus()">📤 分享報表</button>
   </div>
 
   <div id="balance-hero">
     <div class="balance-label">目前結餘</div>
-    <div class="balance-amount"><span>NT$</span><span id="balance-num">97,246</span></div>
+    <div class="balance-amount"><span>NT$</span><span id="balance-num">--</span></div>
     <div class="balance-row">
       <div class="balance-stat">
         <div class="balance-stat-label">總收入</div>
-        <div class="balance-stat-val" id="total-income-disp" style="color:var(--green)">NT$ 0</div>
+        <div class="balance-stat-val" id="total-income-disp" style="color:var(--green)">--</div>
       </div>
       <div class="balance-stat">
         <div class="balance-stat-label">總支出</div>
-        <div class="balance-stat-val" id="total-expense-disp" style="color:var(--red)">NT$ 0</div>
+        <div class="balance-stat-val" id="total-expense-disp" style="color:var(--red)">--</div>
       </div>
       <div class="balance-stat">
         <div class="balance-stat-label">繳費戶</div>
-        <div class="balance-stat-val" id="paid-units-disp" style="color:var(--gold)">0 / 12</div>
+        <div class="balance-stat-val" id="paid-units-disp" style="color:var(--gold)">--</div>
       </div>
     </div>
   </div>
@@ -163,10 +177,14 @@
   <div id="content">
     <div id="tab-records"><div class="section"><div class="section-title">最新帳務</div><div id="records-list"></div></div></div>
     <div id="tab-units" style="display:none">
-      <div id="unpaid-alert-area"></div>
+      <div id="unpaid-alert-area" class="section"></div>
       <div class="section"><div class="section-title">住戶最近繳費日</div><div class="unit-grid" id="unit-grid"></div></div>
     </div>
     <div id="tab-history" style="display:none"><div class="section"><div class="section-title">全期收支明細</div><div id="history-list"></div></div></div>
+  </div>
+
+  <div id="footer-version">
+    <button class="footer-ver-btn" onclick="openVersionSheet()">偉士大樓管委費系統 · v1.8.3 · 更新履歷</button>
   </div>
 
   <div id="fab-area">
@@ -180,6 +198,16 @@
 <div class="overlay" id="unit-overlay" onclick="closeIfOutside(event,'unit-overlay')"><div class="sheet"><div class="sheet-handle"></div><div class="sheet-title" id="unit-sheet-title">繳費清單</div><div class="month-grid" id="unit-month-grid"></div><button class="btn btn-cancel" style="width:100%" onclick="closeSheet('unit')">關閉</button></div></div>
 <div class="overlay" id="date-picker-overlay" onclick="closeIfOutside(event,'date-picker-overlay')"><div class="sheet"><div class="sheet-handle"></div><div class="sheet-title">選擇日期</div><div class="form-group"><input type="date" class="form-input" id="constrained-date"></div><div class="form-btns"><button class="btn btn-cancel" onclick="closeSheet('date-picker')">取消</button><button class="btn btn-ok" id="date-picker-confirm-btn">確認</button></div></div></div>
 <div class="confirm-overlay" id="confirm-overlay"><div class="confirm-box"><div class="confirm-title" id="confirm-title">確認</div><div class="confirm-msg" id="confirm-msg"></div><div class="confirm-btns"><button class="btn btn-cancel" onclick="confirmNo()">取消</button><button class="btn btn-ok" id="confirm-yes-btn" onclick="confirmYes()">確認</button></div></div></div>
+
+<div class="overlay" id="version-overlay" onclick="closeIfOutside(event,'version-overlay')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">更新履歷</div>
+    <div class="version-item"><span class="version-tag">v1.8.3</span><div class="version-notes"><li>修復 v1.8.2 的選單彈出與版本顯示錯誤</li><li>修復住戶卡片無法點擊的問題</li></div></div>
+    <div class="version-item"><span class="version-tag">v1.8.2</span><div class="version-notes"><li>改為直接顯示最新繳費日期（紫色加大）</li><li>移除「已繳 X 個月」顯示</li></div></div>
+    <button class="btn btn-cancel" style="width:100%;margin-top:10px" onclick="closeSheet('version')">關閉</button>
+  </div>
+</div>
 
 <script>
 const UNIT_LEFT  = ['426-6','426-5','426-4','426-3','426-2','426-1'];
@@ -245,7 +273,7 @@ function renderUnits() {
   el.innerHTML = UNITS.map(u => {
     const p = state.payments[u] || {};
     const paidMonths = MONTHS.filter(m => p[m]);
-    let dateDisp = '<div class="no-date-label">無紀錄</div>';
+    let dateDisp = '<div style="font-size:11px;opacity:0.5">無紀錄</div>';
     if (paidMonths.length > 0) {
       const lastDate = p[paidMonths[paidMonths.length-1]];
       dateDisp = `<div class="latest-date-label">${lastDate.substring(5)}</div>`;
@@ -275,12 +303,7 @@ function shareStatus() {
   UNITS.forEach(u => {
     const p = state.payments[u] || {};
     const paidM = MONTHS.filter(m => p[m]);
-    if (paidM.length > 0) {
-      const lastDate = p[paidM[paidM.length-1]];
-      text += `✅ ${u}：最新繳費日 ${lastDate}\n`;
-    } else {
-      text += `❌ ${u}：尚未繳費\n`;
-    }
+    text += paidM.length > 0 ? `✅ ${u}：最新繳費 ${p[paidM[paidM.length-1]]}\n` : `❌ ${u}：尚未繳費\n`;
   });
   text += `\n結餘：NT$ ${balance().toLocaleString()}`;
   if (navigator.share) navigator.share({ title: '偉士大樓報表', text: text });
@@ -293,18 +316,22 @@ function switchTab(tab) {
   document.getElementById('fab-area').style.display = tab === 'units' ? 'none' : 'flex';
 }
 
-let editingId = null;
 function openSheet(type, record) {
+  if (type === 'version') { document.getElementById('version-overlay').classList.add('show'); return; }
   editingId = record ? record.id : null;
   const today = new Date().toISOString().split('T')[0];
-  document.getElementById(type+'-date').value = record ? record.date : today;
-  document.getElementById(type+'-desc').value = record ? record.desc : '';
-  document.getElementById(type+'-amount').value = record ? record.amount : '';
+  if(type !== 'date-picker') {
+    document.getElementById(type+'-date').value = record ? record.date : today;
+    document.getElementById(type+'-desc').value = record ? record.desc : '';
+    document.getElementById(type+'-amount').value = record ? record.amount : '';
+  }
   document.getElementById(type+'-overlay').classList.add('show');
 }
+function openVersionSheet() { openSheet('version'); }
 function closeSheet(type) { document.getElementById(type+'-overlay').classList.remove('show'); }
 function closeIfOutside(e, id) { if (e.target.id === id) closeSheet(id.replace('-overlay','')); }
 
+let editingId = null;
 function editRecord(id) { const r = state.records.find(x => x.id === id); if (r) openSheet(r.type, r); }
 function submitRecord(type) {
   const date = document.getElementById(type+'-date').value;
@@ -327,7 +354,6 @@ function deleteRecord(id) {
   }, true);
 }
 
-let activeUnit = null;
 function openUnitSheet(unit) {
   activeUnit = unit; document.getElementById('unit-sheet-title').textContent = unit;
   const p = state.payments[unit] || {};
