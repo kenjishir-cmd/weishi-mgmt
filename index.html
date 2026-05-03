@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="偉士管委">
 <link rel="manifest" href="manifest.json">
-<title>偉士大樓管委費系統</title>
+<title>偉士大樓管理費系統</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500&family=DM+Mono&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -130,6 +130,15 @@
   .month-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
   .month-btn{padding:10px 4px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);font-size:12px;cursor:pointer;text-align:center}
   .month-btn.paid{background:var(--green-bg);border-color:var(--green);color:var(--green);font-weight:600}
+
+  .version-item{padding:14px 0;border-bottom:1px solid var(--border)}
+  .version-item:last-of-type{border-bottom:none}
+  .version-tag{display:inline-block;font-family:'DM Mono';font-size:11px;background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue);border-radius:5px;padding:2px 8px;margin-bottom:6px}
+  .version-tag.latest{background:var(--green-bg);color:var(--green);border-color:var(--green)}
+  .version-vdate{font-size:10px;color:var(--text2);margin-bottom:6px;font-family:'DM Mono'}
+  .version-notes{font-size:12px;color:var(--text);line-height:1.7;padding-left:4px}
+  .version-notes li{list-style:none;margin-bottom:2px}
+  .version-notes li::before{content:'· ';color:var(--gold)}
 </style>
 </head>
 <body>
@@ -138,7 +147,7 @@
     <div class="header-row">
       <div>
         <div class="header-title">偉士大樓</div>
-        <div class="header-sub">管理委員費收支系統</div>
+        <div class="header-sub">管理費收支系統</div>
       </div>
       <div class="header-datetime">
         <div class="header-time" id="clock">--:--:--</div>
@@ -152,7 +161,7 @@
   </div>
 
   <div class="version-bar">
-    <button class="version-btn" onclick="openVersionSheet()">v2.0.1 · 體感穩定修正</button>
+    <button class="version-btn" onclick="openVersionSheet()">v2.0.2 · 標題修正</button>
     <button class="share-btn" onclick="shareStatus()">📤 分享報表</button>
   </div>
 
@@ -190,7 +199,7 @@
   </div>
 
   <div id="footer-version">
-    <button class="footer-ver-btn" onclick="openVersionSheet()">偉士大樓管委費系統 · v2.0.1</button>
+    <button class="footer-ver-btn" onclick="openVersionSheet()">偉士大樓管理費系統 · v2.0.2</button>
   </div>
 
   <div id="fab-area">
@@ -204,9 +213,58 @@
 <div class="overlay" id="unit-overlay" onclick="closeIfOutside(event,'unit-overlay')"><div class="sheet"><div class="sheet-handle"></div><div class="sheet-title" id="unit-sheet-title">繳費清單</div><div class="month-grid" id="unit-month-grid"></div><button class="btn btn-cancel" style="width:100%" onclick="closeSheet('unit')">關閉</button></div></div>
 <div class="overlay" id="date-picker-overlay" onclick="closeIfOutside(event,'date-picker-overlay')"><div class="sheet"><div class="sheet-handle"></div><div class="sheet-title" id="date-picker-title">選擇繳費日期</div><div class="form-group"><input type="date" class="form-input" id="constrained-date"></div><div class="form-btns"><button class="btn btn-cancel" onclick="closeSheet('date-picker')">取消</button><button class="btn btn-ok" id="date-picker-confirm-btn">確認</button></div></div></div>
 <div class="confirm-overlay" id="confirm-overlay"><div class="confirm-box"><div class="confirm-title" id="confirm-title">確認</div><div class="confirm-msg" id="confirm-msg"></div><div class="confirm-btns"><button class="btn btn-cancel" onclick="confirmNo()">取消</button><button class="btn btn-ok" id="confirm-yes-btn" onclick="confirmYes()">確認</button></div></div></div>
+
 <div class="overlay" id="version-overlay" onclick="closeIfOutside(event,'version-overlay')">
-  <div class="sheet"><div class="sheet-handle"></div><div class="sheet-title">更新履歷</div>
-    <div class="version-item"><span class="version-tag">v2.0.1</span><div class="version-notes"><li>修復體感溫度抓取邏輯，對應當前小時數據</li><li>加入 API 強制不快取參數，並設定每 30 分鐘自動重抓</li></div></div>
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">更新履歷</div>
+
+    <div class="version-item">
+      <div><span class="version-tag latest">v2.0.2</span></div>
+      <div class="version-vdate">2026-05-03</div>
+      <ul class="version-notes">
+        <li>標題簡化為「管理費收支系統」</li>
+        <li>維持體感溫度穩定抓取與定時重抓邏輯</li>
+      </ul>
+    </div>
+
+    <div class="version-item">
+      <div><span class="version-tag">v2.0.1</span></div>
+      <div class="version-vdate">2026-05-03</div>
+      <ul class="version-notes">
+        <li>修復體感溫度抓取邏輯，對應當前小時數據</li>
+        <li>加入 API 強制不快取參數，並設定每 30 分鐘自動重抓</li>
+      </ul>
+    </div>
+
+    <div class="version-item">
+      <div><span class="version-tag">v2.0.0</span></div>
+      <div class="version-vdate">2026-05-03</div>
+      <ul class="version-notes">
+        <li>新增年份切換器，可查看任意年度繳費與帳務</li>
+        <li>住戶繳費資料依年份獨立儲存，歷年資料不互蓋</li>
+        <li>年份列顯示「回本年」快速鍵，當年高亮顯示</li>
+      </ul>
+    </div>
+
+    <div class="version-item">
+      <div><span class="version-tag">v1.9.3</span></div>
+      <div class="version-vdate">2026-04-01</div>
+      <ul class="version-notes">
+        <li>住戶繳費日期限制：點選月份後，僅能選擇該月份內日期</li>
+        <li>優化日期選擇器邏輯，自動跳轉該月首日</li>
+      </ul>
+    </div>
+
+    <div class="version-item">
+      <div><span class="version-tag">v1.3.0</span></div>
+      <div class="version-vdate">2026-03-01</div>
+      <ul class="version-notes">
+        <li>帳務記錄新增編輯與刪除功能</li>
+        <li>呼吸電梯與定位天氣功能整合</li>
+      </ul>
+    </div>
+
     <button class="btn btn-cancel" style="width:100%;margin-top:10px" onclick="closeSheet('version')">關閉</button>
   </div>
 </div>
@@ -268,7 +326,6 @@ function updateClock() {
 }
 setInterval(updateClock, 1000); updateClock();
 
-/* --- 天氣修正版 --- */
 async function updateWeather() {
   if (!navigator.onLine || !navigator.geolocation) return;
   const weatherBox = document.getElementById('weather-box');
@@ -284,7 +341,7 @@ async function updateWeather() {
     } catch(e) {}
   });
 }
-setInterval(updateWeather, 1800000); // 30分鐘定時重抓
+setInterval(updateWeather, 1800000);
 window.addEventListener('online', updateWeather);
 window.addEventListener('offline', () => { document.getElementById('weather-box').classList.add('offline'); document.getElementById('loc-disp').textContent = '⚠️ 網路離線'; });
 updateWeather();
@@ -365,6 +422,13 @@ function openSheet(type, record) {
     document.getElementById(type+'-date').value = record ? record.date : today;
     document.getElementById(type+'-desc').value = record ? record.desc : '';
     document.getElementById(type+'-amount').value = record ? record.amount : '';
+    if (type === 'income') {
+      document.getElementById('income-sheet-title').textContent = record ? '編輯收入' : '新增收入';
+      document.getElementById('income-submit-btn').textContent = record ? '確認修改' : '確認';
+    } else if (type === 'expense') {
+      document.getElementById('expense-sheet-title').textContent = record ? '編輯支出' : '新增支出';
+      document.getElementById('expense-submit-btn').textContent = record ? '確認修改' : '確認';
+    }
   }
   document.getElementById(type+'-overlay').classList.add('show');
 }
@@ -403,7 +467,8 @@ function toggleMonth(unit, month) {
     const monthIndex = MONTHS.indexOf(month); const firstDay = new Date(selectedYear, monthIndex, 1); const lastDay = new Date(selectedYear, monthIndex + 1, 0);
     const fmt = d => d.toISOString().split('T')[0]; const dateInput = document.getElementById('constrained-date');
     dateInput.value = fmt(firstDay); dateInput.min = fmt(firstDay); dateInput.max = fmt(lastDay);
-    document.getElementById('date-picker-confirm-btn').onclick = () => { state.payments[unit][selectedYear][month] = dateInput.value; saveState(); render(); openUnitSheet(unit); closeSheet('date-picker'); };
+    document.getElementById('date-picker-confirm-btn').onclick = () => { state.payments[unit][monthIndex];
+      state.payments[unit][selectedYear][month] = dateInput.value; saveState(); render(); openUnitSheet(unit); closeSheet('date-picker'); };
     openSheet('date-picker');
   }
 }
