@@ -62,9 +62,12 @@
   .unpaid-tag { font-size: 12px; border: 1px solid rgba(248,81,73,0.4); color: var(--red); padding: 4px 10px; border-radius: 6px; font-weight: 500; background: rgba(248,81,73,0.1); }
 
   .record{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px}
-  .record-top{display:flex;justify-content:space-between}
+  .record-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+  .record-desc{font-size:14px;font-weight:500;line-height:1.4;flex:1}
   .record-amount.income{color:var(--green)}
   .record-amount.expense{color:var(--red)}
+  .record-actions{display:flex;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+  .rec-btn{flex:1;padding:8px 0;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);font-size:12px;cursor:pointer}
 
   .floor-layout { display: flex; flex-direction: column; gap: 12px; padding: 14px 16px; }
   .floor-row { display: grid; grid-template-columns: 1fr 40px 1fr; gap: 8px; align-items: center; }
@@ -114,7 +117,7 @@
   </div>
 
   <div class="version-bar">
-    <button class="version-btn" onclick="openSheet('version')">v2.2.0 · 經典跨年版</button>
+    <button class="version-btn" onclick="openSheet('version')">v2.2.1 · 修正功能回歸</button>
     <button class="share-btn" onclick="shareStatus()">📤 分享報表</button>
   </div>
 
@@ -129,19 +132,19 @@
   </div>
 
   <div id="tabs">
-    <div class="tab" onclick="switchTab('records')">帳務記錄</div>
-    <div class="tab active" onclick="switchTab('units')">住戶管理</div>
-    <div class="tab" onclick="switchTab('history')">全期明細</div>
+    <div class="tab active" onclick="switchTab('records')">帳務記錄</div>
+    <div class="tab" onclick="switchTab('units')">住戶管理</div>
+    <div class="tab" onclick="switchTab('history')">流水帳明細</div>
   </div>
 
   <div id="content">
-    <div id="tab-records" style="display:none"><div class="section"><div class="section-title" id="rec-title">帳務</div><div id="records-list"></div></div></div>
-    <div id="tab-units">
+    <div id="tab-records"><div class="section"><div class="section-title" id="rec-title">帳務明細</div><div id="records-list"></div></div></div>
+    <div id="tab-units" style="display:none">
       <div id="unpaid-alert-area"></div>
       <div class="section"><div class="section-title">大樓結構模擬 (中間為電梯)</div></div>
       <div class="floor-layout" id="unit-grid"></div>
     </div>
-    <div id="tab-history" style="display:none"><div class="section"><div class="section-title">全期流水帳</div><div id="history-list"></div></div></div>
+    <div id="tab-history" style="display:none"><div class="section"><div class="section-title">全期歷史明細</div><div id="history-list"></div></div></div>
   </div>
 
   <div id="fab-area">
@@ -150,10 +153,15 @@
   </div>
 </div>
 
-<div class="overlay" id="income-overlay" onclick="closeIfOutside(event,'income-overlay')"><div class="sheet"><div style="font-size:18px;font-weight:700;color:var(--gold);margin-bottom:15px;text-align:center">新增收入</div><input type="date" id="income-date" class="form-input"><input type="text" id="income-desc" placeholder="說明" class="form-input"><input type="number" id="income-amount" placeholder="金額" class="form-input"><div style="display:flex;gap:10px"><button class="fab" style="background:var(--bg3);color:var(--text2)" onclick="closeSheet('income')">取消</button><button class="fab" style="background:var(--gold);color:var(--bg)" onclick="submitRecord('income')">確認</button></div></div></div>
-<div class="overlay" id="expense-overlay" onclick="closeIfOutside(event,'expense-overlay')"><div class="sheet"><div style="font-size:18px;font-weight:700;color:var(--gold);margin-bottom:15px;text-align:center">新增支出</div><input type="date" id="expense-date" class="form-input"><input type="text" id="expense-desc" placeholder="說明" class="form-input"><input type="number" id="expense-amount" placeholder="金額" class="form-input"><div style="display:flex;gap:10px"><button class="fab" style="background:var(--bg3);color:var(--text2)" onclick="closeSheet('expense')">取消</button><button class="fab" style="background:var(--red);color:#fff" onclick="submitRecord('expense')">確認</button></div></div></div>
+<div class="overlay" id="income-overlay" onclick="closeIfOutside(event,'income-overlay')"><div class="sheet"><div style="font-size:18px;font-weight:700;color:var(--gold);margin-bottom:15px;text-align:center" id="income-sheet-title">新增收入</div><input type="date" id="income-date" class="form-input"><input type="text" id="income-desc" placeholder="說明" class="form-input"><input type="number" id="income-amount" placeholder="金額" class="form-input"><div style="display:flex;gap:10px"><button class="fab" style="background:var(--bg3);color:var(--text2)" onclick="closeSheet('income')">取消</button><button class="fab" style="background:var(--gold);color:var(--bg)" onclick="submitRecord('income')">確認</button></div></div></div>
+<div class="overlay" id="expense-overlay" onclick="closeIfOutside(event,'expense-overlay')"><div class="sheet"><div style="font-size:18px;font-weight:700;color:var(--gold);margin-bottom:15px;text-align:center" id="expense-sheet-title">新增支出</div><input type="date" id="expense-date" class="form-input"><input type="text" id="expense-desc" placeholder="說明" class="form-input"><input type="number" id="expense-amount" placeholder="金額" class="form-input"><div style="display:flex;gap:10px"><button class="fab" style="background:var(--bg3);color:var(--text2)" onclick="closeSheet('expense')">取消</button><button class="fab" style="background:var(--red);color:#fff" onclick="submitRecord('expense')">確認</button></div></div></div>
 <div class="overlay" id="unit-overlay" onclick="closeIfOutside(event,'unit-overlay')"><div class="sheet"><div id="unit-sheet-title" style="font-size:18px;font-weight:700;color:var(--gold);margin-bottom:15px;text-align:center"></div><div class="month-grid" id="unit-month-grid"></div><button class="fab" style="width:100%;margin-top:20px;background:var(--bg3);color:var(--text2)" onclick="closeSheet('unit')">關閉</button></div></div>
-<div class="overlay" id="version-overlay" onclick="closeIfOutside(event,'version-overlay')"><div class="sheet"><div style="font-size:18px;font-weight:700;color:var(--gold);margin-bottom:15px;text-align:center">更新履歷</div><div style="font-size:13px; line-height:1.6">• 移除圓餅圖，回歸簡潔樓層模擬介面<br>• 支援跨年份管理，繳費狀態按年獨立<br>• 總結餘採跨年累計制<br>• 保留呼吸電梯、定位天氣與離線偵測</div><button class="fab" style="width:100%;margin-top:20px;background:var(--bg3);color:var(--text2)" onclick="closeSheet('version')">關閉</button></div></div>
+<div class="overlay" id="version-overlay" onclick="closeIfOutside(event,'version-overlay')"><div class="sheet"><div style="font-size:18px;font-weight:700;color:var(--gold);margin-bottom:15px;text-align:center">更新履歷</div>
+<div style="font-size:13px; line-height:1.6; max-height:300px; overflow-y:auto">
+  <b>v2.2.1 修復版</b><br>• 找回「編輯/刪除」功能按鈕<br>• 修復住戶月份點擊無反應問題<br><br>
+  <b>v2.2.0</b><br>• 移除圓餅圖，回歸經典模擬介面<br>• 支援跨年份切換與資料搬家<br><br>
+  <b>v1.9.2</b><br>• 新增呼吸電梯模擬與離線偵測
+</div><button class="fab" style="width:100%;margin-top:20px;background:var(--bg3);color:var(--text2)" onclick="closeSheet('version')">關閉</button></div></div>
 
 <script>
 const INIT_BALANCE = 97246;
@@ -163,6 +171,7 @@ const UNITS = FLOORS.flatMap(f => [f.L, f.R]);
 const ELEVATOR_SVG = `<svg class="elevator-icon" viewBox="0 0 24 24"><path d="M7,2L17,2A2,2 0 0,1 19,4V20A2,2 0 0,1 17,22H7A2,2 0 0,1 5,20V4A2,2 0 0,1 7,2M7,4V20H17V4H7M8,6H11V9H8V6M13,6H16V9H13V6M8,11H11V14H8V11M13,11H16V14H13V11M8,16H11V19H8V16M13,16H16V19H13V16Z" /></svg>`;
 
 let state = { currentYear: "2026", records: [], payments: {}, nextId: 1 };
+let editingId = null;
 
 function loadData() {
   const saved = localStorage.getItem('weishi_v2_data');
@@ -180,53 +189,55 @@ function loadData() {
   document.getElementById('year-selector').value = state.currentYear;
 }
 function saveData() { localStorage.setItem('weishi_v2_data', JSON.stringify(state)); }
-function changeYear() {
-  state.currentYear = document.getElementById('year-selector').value;
-  if (!state.payments[state.currentYear]) state.payments[state.currentYear] = {};
-  saveData(); render();
-}
+function changeYear() { state.currentYear = document.getElementById('year-selector').value; if (!state.payments[state.currentYear]) state.payments[state.currentYear] = {}; saveData(); render(); }
+
 function render() {
   let totalB = INIT_BALANCE; state.records.forEach(r => totalB += (r.type === 'income' ? r.amount : -r.amount));
   document.getElementById('balance-num').textContent = totalB.toLocaleString();
   const yrRecs = state.records.filter(r => new Date(r.date).getFullYear().toString() === state.currentYear);
-  const yrInc = yrRecs.filter(r=>r.type==='income').reduce((s,r)=>s+r.amount,0);
-  const yrExp = yrRecs.filter(r=>r.type==='expense').reduce((s,r)=>s+r.amount,0);
-  document.getElementById('total-income-disp').textContent = 'NT$ ' + yrInc.toLocaleString();
-  document.getElementById('total-expense-disp').textContent = 'NT$ ' + yrExp.toLocaleString();
+  document.getElementById('total-income-disp').textContent = 'NT$ ' + yrRecs.filter(r=>r.type==='income').reduce((s,r)=>s+r.amount,0).toLocaleString();
+  document.getElementById('total-expense-disp').textContent = 'NT$ ' + yrRecs.filter(r=>r.type==='expense').reduce((s,r)=>s+r.amount,0).toLocaleString();
   const currPay = state.payments[state.currentYear] || {};
-  const paidCount = UNITS.filter(u => MONTHS.some(m => currPay[u] && currPay[u][m])).length;
-  document.getElementById('paid-units-disp').textContent = paidCount + ' / 12';
-  document.getElementById('rec-title').textContent = `${state.currentYear} 帳務`;
+  document.getElementById('paid-units-disp').textContent = UNITS.filter(u => MONTHS.some(m => currPay[u] && currPay[u][m])).length + ' / 12';
+  document.getElementById('rec-title').textContent = `${state.currentYear} 帳務明細`;
   renderUnits(); renderRecords(); renderHistory(); renderUnpaidAlert();
 }
+
 function renderUnpaidAlert() {
   const currPay = state.payments[state.currentYear] || {};
   const unpaid = UNITS.filter(u => !MONTHS.some(m => currPay[u] && currPay[u][m]));
   const area = document.getElementById('unpaid-alert-area');
   area.innerHTML = unpaid.length > 0 ? `<div class="unpaid-alert-box"><div style="font-size:11px;color:var(--red);font-weight:700">⚠️ ${state.currentYear} 尚未繳費</div><div class="unpaid-list">${unpaid.map(u => `<span class="unpaid-tag">${u}</span>`).join('')}</div></div>` : '';
 }
-function getUnitCard(u) {
-  const p = state.payments[state.currentYear][u] || {};
-  const pm = MONTHS.filter(m => p[m]);
-  let dd = '<div style="font-size:11px;opacity:0.3">無紀錄</div>';
-  if (pm.length > 0) dd = `<div class="latest-date-label">${p[pm[pm.length-1]].substring(5)}</div>`;
-  const dots = MONTHS.map(m => `<div class="dot ${p[m]?'paid':''}"></div>`).join('');
-  return `<div class="unit-card" onclick="openUnitSheet('${u}')"><div class="unit-name">${u}</div><div class="unit-dots">${dots}</div>${dd}</div>`;
+
+function renderUnits() {
+  const currPay = state.payments[state.currentYear] || {};
+  document.getElementById('unit-grid').innerHTML = FLOORS.map(f => {
+    const getU = (u) => {
+      const p = currPay[u] || {};
+      const pm = MONTHS.filter(m => p[m]);
+      const dd = pm.length > 0 ? `<div class="latest-date-label">${p[pm[pm.length-1]].substring(5)}</div>` : '<div style="font-size:11px;opacity:0.3">無紀錄</div>';
+      const dots = MONTHS.map(m => `<div class="dot ${p[m]?'paid':''}"></div>`).join('');
+      return `<div class="unit-card" onclick="openUnitSheet('${u}')"><div class="unit-name">${u}</div><div class="unit-dots">${dots}</div>${dd}</div>`;
+    };
+    return `<div class="floor-row">${getU(f.L)}<div class="elevator-shaft">${ELEVATOR_SVG}</div>${getU(f.R)}</div>`;
+  }).join('');
 }
-function renderUnits() { document.getElementById('unit-grid').innerHTML = FLOORS.map(f => `<div class="floor-row">${getUnitCard(f.L)}<div class="elevator-shaft">${ELEVATOR_SVG}</div>${getUnitCard(f.R)}</div>`).join(''); }
+
 function renderRecords() {
   const yrRecs = state.records.filter(r => new Date(r.date).getFullYear().toString() === state.currentYear).reverse();
-  document.getElementById('records-list').innerHTML = yrRecs.length === 0 ? '<div style="color:var(--text2);text-align:center;padding:20px">尚無紀錄</div>' : yrRecs.map(r => `<div class="record"><div class="record-top"><div>${r.desc}</div><div class="record-amount ${r.type}">${r.type==='income'?'＋':'－'} ${r.amount.toLocaleString()}</div></div><div style="font-size:11px;color:var(--text2);margin-top:4px">${r.date}</div></div>`).join('');
+  const list = document.getElementById('records-list');
+  if (yrRecs.length === 0) { list.innerHTML = '<div style="color:var(--text2);text-align:center;padding:20px">尚無紀錄</div>'; return; }
+  list.innerHTML = yrRecs.map(r => `
+    <div class="record">
+      <div class="record-top"><div>${r.desc}</div><div class="record-amount ${r.type}">${r.type==='income'?'＋':'－'}${r.amount.toLocaleString()}</div></div>
+      <div style="font-size:11px;color:var(--text2);margin-top:4px">${r.date}</div>
+      <div class="record-actions"><button class="rec-btn" onclick="editRecord(${r.id})">編輯</button><button class="rec-btn" onclick="deleteRecord(${r.id})" style="color:var(--red)">刪除</button></div>
+    </div>`).join('');
 }
+
 function renderHistory() { document.getElementById('history-list').innerHTML = [...state.records].reverse().map(r => `<div class="record" style="padding:10px;margin-bottom:8px"><div style="display:flex;justify-content:space-between"><div style="font-size:13px">${r.desc}</div><div style="font-size:13px;color:var(--${r.type==='income'?'green':'red'})">${r.type==='income'?'＋':'－'}${r.amount.toLocaleString()}</div></div><div style="font-size:10px;color:var(--text2);margin-top:4px">${r.date}</div></div>`).join(''); }
-function shareStatus() {
-  const now = new Date(); let text = `🏢 偉士大樓報表 (${state.currentYear}/${now.getMonth()+1}/${now.getDate()})\n--------------------\n`;
-  UNITS.forEach(u => { const p = state.payments[state.currentYear][u] || {}; const pm = MONTHS.filter(m => p[m]); text += pm.length > 0 ? `✅ ${u}：最新繳費 ${p[pm[pm.length-1]]}\n` : `❌ ${u}：尚未繳費\n`; });
-  let tb = INIT_BALANCE; state.records.forEach(r => tb += (r.type === 'income' ? r.amount : -r.amount));
-  text += `\n結餘：NT$ ${tb.toLocaleString()}`;
-  if (navigator.share) navigator.share({ title: '報表', text: text }); else { navigator.clipboard.writeText(text); alert('已複製！'); }
-}
-let activeUnit = null;
+
 function openUnitSheet(u) {
   activeUnit = u; document.getElementById('unit-sheet-title').textContent = `${state.currentYear} - ${u}`;
   const p = state.payments[state.currentYear][u] || {};
@@ -236,21 +247,43 @@ function openUnitSheet(u) {
 function toggleMonth(m) {
   const yr = state.currentYear; if (!state.payments[yr][activeUnit]) state.payments[yr][activeUnit] = {};
   if (state.payments[yr][activeUnit][m]) { delete state.payments[yr][activeUnit][m]; state.records = state.records.filter(r => !(r.desc === `${activeUnit} ${yr} ${m} 管理費`)); }
-  else { const today = new Date().toISOString().split('T')[0]; state.payments[yr][activeUnit][m] = today; state.records.push({ id: state.nextId++, type: 'income', date: today, desc: `${activeUnit} ${yr} ${m} 管理費`, amount: 1500 }); }
+  else { const d = new Date().toISOString().split('T')[0]; state.payments[yr][activeUnit][m] = d; state.records.push({ id: state.nextId++, type:'income', date:d, desc:`${activeUnit} ${yr} ${m} 管理費`, amount:1500 }); }
   saveData(); render(); openUnitSheet(activeUnit);
 }
-function openSheet(type) { if (type === 'version') { document.getElementById('version-overlay').classList.add('show'); return; } document.getElementById(type+'-date').value = new Date().toISOString().split('T')[0]; document.getElementById(type+'-overlay').classList.add('show'); }
+
+function openSheet(type, recId = null) {
+  editingId = recId;
+  if (type === 'version') { document.getElementById('version-overlay').classList.add('show'); return; }
+  const r = recId ? state.records.find(x=>x.id===recId) : null;
+  document.getElementById(type+'-date').value = r ? r.date : new Date().toISOString().split('T')[0];
+  document.getElementById(type+'-desc').value = r ? r.desc : '';
+  document.getElementById(type+'-amount').value = r ? r.amount : '';
+  document.getElementById(type+'-sheet-title').textContent = r ? '編輯紀錄' : (type==='income'?'新增收入':'新增支出');
+  document.getElementById(type+'-overlay').classList.add('show');
+}
 function submitRecord(type) {
   const d = document.getElementById(type+'-date').value, s = document.getElementById(type+'-desc').value.trim(), a = parseInt(document.getElementById(type+'-amount').value);
-  if (!s || !a) return; state.records.push({ id: state.nextId++, type, date: d, desc: s, amount: a });
+  if (!s || !a) return;
+  if (editingId) { const r = state.records.find(x=>x.id===editingId); r.date=d; r.desc=s; r.amount=a; }
+  else { state.records.push({ id: state.nextId++, type, date: d, desc: s, amount: a }); }
   saveData(); render(); closeSheet(type);
+}
+function editRecord(id) { const r = state.records.find(x=>x.id===id); openSheet(r.type, id); }
+function deleteRecord(id) { if(confirm('確定要刪除這筆紀錄嗎？')) { state.records = state.records.filter(x=>x.id!==id); saveData(); render(); } }
+
+function shareStatus() {
+  const now = new Date(); let text = `🏢 偉士大樓報表 (${state.currentYear}/${now.getMonth()+1}/${now.getDate()})\n--------------------\n`;
+  UNITS.forEach(u => { const p = state.payments[state.currentYear][u] || {}; const pm = MONTHS.filter(m => p[m]); text += pm.length > 0 ? `✅ ${u}：最新繳費 ${p[pm[pm.length-1]]}\n` : `❌ ${u}：尚未繳費\n`; });
+  let tb = INIT_BALANCE; state.records.forEach(r => tb += (r.type === 'income' ? r.amount : -r.amount));
+  text += `\n結餘：NT$ ${tb.toLocaleString()}`;
+  if (navigator.share) navigator.share({ title: '報表', text: text }); else { navigator.clipboard.writeText(text); alert('已複製！'); }
 }
 function switchTab(tab) {
   document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', ['records','units','history'][i] === tab));
   ['records','units','history'].forEach(t => document.getElementById('tab-'+t).style.display = t===tab ? '' : 'none');
   document.getElementById('fab-area').style.display = tab === 'units' ? 'none' : 'flex';
 }
-function closeSheet(id) { document.getElementById(id+'-overlay').classList.remove('show'); }
+function closeSheet(id) { document.getElementById(id+'-overlay').classList.remove('show'); editingId = null; }
 function closeIfOutside(e, id) { if(e.target.id === id) closeSheet(id.replace('-overlay','')); }
 function checkNet() {
   const box = document.getElementById('weather-box');
