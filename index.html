@@ -29,10 +29,7 @@
   #header{padding:calc(var(--safe-top) + 10px) 16px 10px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0}
   .header-row{display:flex;align-items:flex-start;justify-content:space-between}
   .header-title{font-family:'Noto Serif TC',serif;font-size:18px;font-weight:700;color:var(--gold);letter-spacing:2px}
-  
-  /* 年份切換器樣式 */
   .year-selector { background: var(--bg3); border: 1px solid var(--gold-dim); color: var(--gold-light); border-radius: 6px; padding: 2px 8px; font-family: 'DM Mono'; font-size: 14px; outline: none; margin-top: 4px; }
-
   .header-datetime{text-align:right}
   .header-time{font-family:'DM Mono'; font-size:16px; color:var(--gold-light); letter-spacing:1px}
   .header-weather { font-size: 10px; color: var(--gold-dim); margin-top: 4px; display: flex; align-items: center; justify-content: flex-end; gap: 6px; }
@@ -49,21 +46,18 @@
   .section{padding:14px 16px 0}
   .section-title{font-size:11px;color:var(--text2);letter-spacing:2px;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border); display: flex; justify-content: space-between; align-items: center;}
 
-  /* 統計圖表樣式 */
   .chart-container { background: var(--bg2); border-radius: 12px; border: 1px solid var(--border); padding: 16px; margin: 0 16px 16px; display: flex; align-items: center; gap: 20px; }
   .pie-svg { width: 80px; height: 80px; transform: rotate(-90deg); border-radius: 50%; }
   .chart-legend { flex: 1; display: flex; flex-direction: column; gap: 6px; }
   .legend-item { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--text2); }
   .legend-color { width: 8px; height: 8px; border-radius: 2px; }
 
-  /* 樓層模擬 */
   .floor-layout { display: flex; flex-direction: column; gap: 10px; padding: 0 16px 20px; }
   .floor-row { display: grid; grid-template-columns: 1fr 40px 1fr; gap: 8px; align-items: center; }
   .elevator-shaft { display: flex; justify-content: center; opacity: 0.5; animation: elevator-glow 3s infinite; }
   @keyframes elevator-glow { 0%, 100% { filter: drop-shadow(0 0 2px var(--gold-dim)); } 50% { filter: drop-shadow(0 0 8px var(--gold)); } }
   
   .unit-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 4px;text-align:center; transition: 0.2s;}
-  .unit-card.active-unit { border-color: var(--gold); background: var(--bg3); }
   .unit-name{font-size:13px;font-weight:700;margin-bottom:4px;color:var(--gold-light)}
   .unit-dots{display:flex;flex-wrap:wrap;gap:2px;justify-content:center;margin-bottom:4px}
   .dot{width:5px;height:5px;border-radius:50%; background: var(--border);}
@@ -86,7 +80,6 @@
   .month-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
   .month-btn{padding:12px 4px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);font-size:12px; cursor: pointer;}
   .month-btn.paid{border-color:var(--green);color:var(--green);background:var(--green-bg)}
-
   .version-footer { text-align: center; padding: 10px; font-size: 10px; color: var(--text2); font-family: 'DM Mono'; }
 </style>
 </head>
@@ -105,16 +98,13 @@
       </div>
       <div class="header-datetime">
         <div class="header-time" id="clock">--:--:--</div>
-        <div class="header-weather">
-          <span id="loc-disp">斗六市</span>
-          <span id="temp-disp">--°C</span>
-        </div>
+        <div class="header-weather"><span id="loc-disp">斗六市</span> <span id="temp-disp">--°C</span></div>
       </div>
     </div>
   </div>
 
   <div id="balance-hero">
-    <div style="font-size:11px;color:var(--text2);letter-spacing:1px;margin-bottom:4px">系統總結餘 (含跨年累計)</div>
+    <div style="font-size:11px;color:var(--text2);letter-spacing:1px;margin-bottom:4px">系統總結餘 (含舊版搬移)</div>
     <div class="balance-amount"><span>NT$</span><span id="balance-num">0</span></div>
   </div>
 
@@ -125,109 +115,79 @@
 
   <div id="content">
     <div id="tab-units">
-      <div class="section"><div class="section-title">繳費統計圖表</div></div>
-      <div class="chart-container">
-        <svg class="pie-svg" viewBox="0 0 32 32" id="pie-chart"></svg>
-        <div class="chart-legend" id="chart-legend"></div>
-      </div>
-      <div class="section"><div class="section-title">樓層結構模擬</div></div>
+      <div class="chart-container"><svg class="pie-svg" viewBox="0 0 32 32" id="pie-chart"></svg><div class="chart-legend" id="chart-legend"></div></div>
       <div class="floor-layout" id="unit-grid"></div>
     </div>
-
-    <div id="tab-records" style="display:none">
-      <div class="section"><div class="section-title" id="record-year-title">2026 帳務明細</div><div id="records-list"></div></div>
-    </div>
+    <div id="tab-records" style="display:none"><div class="section"><div class="section-title" id="record-year-title">帳務明細</div><div id="records-list"></div></div></div>
   </div>
 
-  <div class="version-footer">WEISHI MGMT SYSTEM v1.9.5</div>
-
+  <div class="version-footer">WEISHI MGMT v1.9.6 (Fix Auto-Migration)</div>
   <div id="fab-area">
     <button class="fab" style="background:var(--green);color:#000" onclick="openSheet('income')">＋ 收入</button>
     <button class="fab" style="background:var(--red);color:#fff" onclick="openSheet('expense')">－ 支出</button>
   </div>
 </div>
 
-<div class="overlay" id="unit-overlay" onclick="closeIfOutside(event,'unit-overlay')">
-  <div class="sheet">
-    <div id="unit-sheet-title" style="font-size:18px;font-weight:700;color:var(--gold);margin-bottom:15px;text-align:center"></div>
-    <div class="month-grid" id="unit-month-grid"></div>
-    <button class="fab" style="width:100%;margin-top:20px;background:var(--bg3);color:var(--text2);border:1px solid var(--border)" onclick="closeSheet('unit')">關閉</button>
-  </div>
-</div>
-
-<div class="overlay" id="record-overlay" onclick="closeIfOutside(event,'record-overlay')">
-  <div class="sheet">
-    <div id="record-sheet-title" style="font-size:18px;font-weight:700;color:var(--gold);margin-bottom:15px;text-align:center"></div>
-    <input type="date" id="rec-date" class="month-btn" style="width:100%;margin-bottom:10px;text-align:left;padding:12px;background:var(--bg3)">
-    <input type="text" id="rec-desc" placeholder="說明（如：公設維修、某某繳費）" style="width:100%;margin-bottom:10px;padding:12px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text)">
-    <input type="number" id="rec-amount" placeholder="金額" style="width:100%;margin-bottom:20px;padding:12px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text)">
-    <div style="display:flex;gap:10px">
-      <button class="fab" style="background:var(--bg3);color:var(--text2)" onclick="closeSheet('record')">取消</button>
-      <button id="rec-submit-btn" class="fab" style="background:var(--gold);color:var(--bg)" onclick="submitRecord()">確認</button>
-    </div>
-  </div>
-</div>
+<div class="overlay" id="unit-overlay" onclick="closeIfOutside(event,'unit-overlay')"><div class="sheet"><div id="unit-sheet-title" style="font-size:18px;font-weight:700;color:var(--gold);margin-bottom:15px;text-align:center"></div><div class="month-grid" id="unit-month-grid"></div><button class="fab" style="width:100%;margin-top:20px;background:var(--bg3);color:var(--text2);border:1px solid var(--border)" onclick="closeSheet('unit')">關閉</button></div></div>
+<div class="overlay" id="record-overlay" onclick="closeIfOutside(event,'record-overlay')"><div class="sheet"><div id="record-sheet-title" style="font-size:18px;font-weight:700;color:var(--gold);margin-bottom:15px;text-align:center"></div><input type="date" id="rec-date" class="month-btn" style="width:100%;margin-bottom:10px;text-align:left;padding:12px;background:var(--bg3)"><input type="text" id="rec-desc" placeholder="說明" style="width:100%;margin-bottom:10px;padding:12px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text)"><input type="number" id="rec-amount" placeholder="金額" style="width:100%;margin-bottom:20px;padding:12px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text)"><div style="display:flex;gap:10px"><button class="fab" style="background:var(--bg3);color:var(--text2)" onclick="closeSheet('record')">取消</button><button id="rec-submit-btn" class="fab" style="background:var(--gold);color:var(--bg)" onclick="submitRecord()">確認</button></div></div></div>
 
 <script>
-const INIT_BALANCE = 97246; // 初始基數
+const INIT_BALANCE = 97246;
 const MONTHS = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
 const UNITS = ['426-6','424-6','426-5','424-5','426-4','424-4','426-3','424-3','426-2','424-2','426-1','424-1'];
 const ELEVATOR_SVG = `<svg width="20" height="20" viewBox="0 0 24 24" fill="var(--gold-dim)"><path d="M7,2L17,2A2,2 0 0,1 19,4V20A2,2 0 0,1 17,22H7A2,2 0 0,1 5,20V4A2,2 0 0,1 7,2M7,4V20H17V4H7M8,6H11V9H8V6M13,6H16V9H13V6M8,11H11V14H8V11M13,11H16V14H13V11M8,16H11V19H8V16M13,16H16V19H13V16Z" /></svg>`;
 
-let state = {
-  currentYear: "2026",
-  records: [], // 格式: {id, year, type, date, desc, amount}
-  payments: {}, // 格式: { "2026": { "426-6": { "1月": "2026-05-01" } } }
-  nextId: 1
-};
+let state = { currentYear: "2026", records: [], payments: {}, nextId: 1 };
 
 function loadData() {
-  const saved = localStorage.getItem('weishi_v195_data');
-  if (saved) state = JSON.parse(saved);
+  // 1. 先嘗試抓取新版資料
+  const newSaved = localStorage.getItem('weishi_v195_data');
+  if (newSaved) {
+    state = JSON.parse(newSaved);
+  } else {
+    // 2. 如果沒有新版資料，嘗試搬移舊版 (v1.9.1 ~ v1.9.2 的 weishi-state-v2)
+    const oldSaved = localStorage.getItem('weishi-state-v2');
+    if (oldSaved) {
+      const old = JSON.parse(oldSaved);
+      state.records = old.records || [];
+      state.nextId = old.nextId || 1;
+      // 轉換舊版支付格式到新版跨年份格式 (假設舊資料都是 2026 年)
+      state.payments["2026"] = old.payments || {};
+      state.currentYear = "2026";
+      saveData(); // 立即儲存為新版格式
+      console.log("Migration Success!");
+    }
+  }
   if (!state.payments[state.currentYear]) state.payments[state.currentYear] = {};
   document.getElementById('year-select').value = state.currentYear;
 }
 
-function saveData() {
-  localStorage.setItem('weishi_v195_data', JSON.stringify(state));
-}
+function saveData() { localStorage.setItem('weishi_v195_data', JSON.stringify(state)); }
 
 function changeYear() {
   state.currentYear = document.getElementById('year-select').value;
   if (!state.payments[state.currentYear]) state.payments[state.currentYear] = {};
-  saveData();
-  render();
+  saveData(); render();
 }
 
 function calculateBalance() {
-  // 結餘 = 初始值 + 所有年份所有收入 - 所有年份所有支出
   let total = INIT_BALANCE;
-  state.records.forEach(r => {
-    total += (r.type === 'income' ? r.amount : -r.amount);
-  });
+  state.records.forEach(r => { total += (r.type === 'income' ? r.amount : -r.amount); });
   return total;
 }
 
 function render() {
   document.getElementById('balance-num').textContent = calculateBalance().toLocaleString();
   document.getElementById('record-year-title').textContent = `${state.currentYear} 帳務明細`;
-  renderUnits();
-  renderChart();
-  renderRecords();
+  renderUnits(); renderChart(); renderRecords();
 }
 
 function renderUnits() {
   const grid = document.getElementById('unit-grid');
-  let html = '';
-  const currentPay = state.payments[state.currentYear] || {};
-  
+  let html = ''; const currentPay = state.payments[state.currentYear] || {};
   for (let i = 0; i < UNITS.length; i += 2) {
     const left = UNITS[i], right = UNITS[i+1];
-    html += `<div class="floor-row">
-      ${getUnitCard(left, currentPay[left])}
-      <div class="elevator-shaft">${ELEVATOR_SVG}</div>
-      ${getUnitCard(right, currentPay[right])}
-    </div>`;
+    html += `<div class="floor-row">${getUnitCard(left, currentPay[left])}<div class="elevator-shaft">${ELEVATOR_SVG}</div>${getUnitCard(right, currentPay[right])}</div>`;
   }
   grid.innerHTML = html;
 }
@@ -235,69 +195,36 @@ function renderUnits() {
 function getUnitCard(name, payData = {}) {
   const paidCount = MONTHS.filter(m => payData[m]).length;
   const dots = MONTHS.map(m => `<div class="dot ${payData[m]?'paid':''}"></div>`).join('');
-  const latest = MONTHS.reverse().find(m => payData[m]);
-  MONTHS.reverse(); // 轉回來
-  return `<div class="unit-card" onclick="openUnitSheet('${name}')">
-    <div class="unit-name">${name}</div>
-    <div class="unit-dots">${dots}</div>
-    <div class="unit-status-text">${latest ? latest : '未繳費'}</div>
-  </div>`;
+  const latest = [...MONTHS].reverse().find(m => payData[m]);
+  return `<div class="unit-card" onclick="openUnitSheet('${name}')"><div class="unit-name">${name}</div><div class="unit-dots">${dots}</div><div class="unit-status-text">${latest ? latest : '未繳費'}</div></div>`;
 }
 
 function renderChart() {
   const currentPay = state.payments[state.currentYear] || {};
   let full = 0, partial = 0, none = 0;
-  
   UNITS.forEach(u => {
     const count = MONTHS.filter(m => currentPay[u] && currentPay[u][m]).length;
-    if (count === 12) full++;
-    else if (count > 0) partial++;
-    else none++;
+    if (count === 12) full++; else if (count > 0) partial++; else none++;
   });
-
   const total = UNITS.length;
-  const pFull = (full/total)*100, pPartial = (partial/total)*100, pNone = (none/total)*100;
-  
-  // 簡易 SVG 圓餅圖
+  const pFull = (full/total)*100, pPartial = (partial/total)*100;
   const svg = document.getElementById('pie-chart');
-  svg.innerHTML = `
-    <circle r="16" cx="16" cy="16" fill="var(--red)" />
-    <circle r="16" cx="16" cy="16" fill="transparent" stroke="var(--blue)" stroke-width="32" stroke-dasharray="${pPartial + pFull} 100" />
-    <circle r="16" cx="16" cy="16" fill="transparent" stroke="var(--green)" stroke-width="32" stroke-dasharray="${pFull} 100" />
-  `;
-  
-  document.getElementById('chart-legend').innerHTML = `
-    <div class="legend-item"><div class="legend-color" style="background:var(--green)"></div>已結清: ${full} 戶</div>
-    <div class="legend-item"><div class="legend-color" style="background:var(--blue)"></div>繳納中: ${partial} 戶</div>
-    <div class="legend-item"><div class="legend-color" style="background:var(--red)"></div>完全未繳: ${none} 戶</div>
-  `;
+  svg.innerHTML = `<circle r="16" cx="16" cy="16" fill="var(--red)" /><circle r="16" cx="16" cy="16" fill="transparent" stroke="var(--blue)" stroke-width="32" stroke-dasharray="${pPartial + pFull} 100" /><circle r="16" cx="16" cy="16" fill="transparent" stroke="var(--green)" stroke-width="32" stroke-dasharray="${pFull} 100" />`;
+  document.getElementById('chart-legend').innerHTML = `<div class="legend-item"><div class="legend-color" style="background:var(--green)"></div>已結清: ${full}</div><div class="legend-item"><div class="legend-color" style="background:var(--blue)"></div>繳納中: ${partial}</div><div class="legend-item"><div class="legend-color" style="background:var(--red)"></div>未繳: ${none}</div>`;
 }
 
 function renderRecords() {
   const list = document.getElementById('records-list');
   const filtered = state.records.filter(r => r.year === state.currentYear).reverse();
-  if (filtered.length === 0) { list.innerHTML = '<div style="color:var(--text2);text-align:center;padding:20px">本年度尚無紀錄</div>'; return; }
-  
-  list.innerHTML = filtered.map(r => `
-    <div class="record">
-      <div class="record-top">
-        <div style="font-size:14px;font-weight:500">${r.desc}</div>
-        <div class="record-amount ${r.type}">${r.type==='income'?'＋':'－'} ${r.amount.toLocaleString()}</div>
-      </div>
-      <div style="font-size:11px;color:var(--text2);margin-top:6px;font-family:'DM Mono'">${r.date}</div>
-    </div>
-  `).join('');
+  if (filtered.length === 0) { list.innerHTML = '<div style="color:var(--text2);text-align:center;padding:20px">尚無紀錄</div>'; return; }
+  list.innerHTML = filtered.map(r => `<div class="record"><div class="record-top"><div>${r.desc}</div><div class="record-amount ${r.type}">${r.type==='income'?'＋':'－'} ${r.amount.toLocaleString()}</div></div><div style="font-size:11px;color:var(--text2);margin-top:4px">${r.date}</div></div>`).join('');
 }
 
-// 彈窗邏輯
 let activeUnit = null;
 function openUnitSheet(unit) {
-  activeUnit = unit;
-  document.getElementById('unit-sheet-title').textContent = `${state.currentYear} 年 - ${unit} 繳費`;
+  activeUnit = unit; document.getElementById('unit-sheet-title').textContent = `${state.currentYear} - ${unit}`;
   const payData = state.payments[state.currentYear][unit] || {};
-  document.getElementById('unit-month-grid').innerHTML = MONTHS.map(m => `
-    <button class="month-btn ${payData[m]?'paid':''}" onclick="toggleMonth('${m}')">${m}${payData[m]?'<br><span style="font-size:9px">'+payData[m].slice(5)+'</span>':''}</button>
-  `).join('');
+  document.getElementById('unit-month-grid').innerHTML = MONTHS.map(m => `<button class="month-btn ${payData[m]?'paid':''}" onclick="toggleMonth('${m}')">${m}${payData[m]?'<br><small>'+payData[m].slice(5)+'</small>':''}</button>`).join('');
   document.getElementById('unit-overlay').classList.add('show');
 }
 
@@ -305,27 +232,21 @@ function toggleMonth(month) {
   const payData = state.payments[state.currentYear][activeUnit] || {};
   if (payData[month]) {
     delete state.payments[state.currentYear][activeUnit][month];
-    // 同步刪除帳務紀錄
     state.records = state.records.filter(r => !(r.desc === `${activeUnit} ${state.currentYear} ${month} 管理費`));
   } else {
     const today = new Date().toISOString().split('T')[0];
     if (!state.payments[state.currentYear][activeUnit]) state.payments[state.currentYear][activeUnit] = {};
     state.payments[state.currentYear][activeUnit][month] = today;
-    // 同步新增帳務紀錄
     state.records.push({ id: state.nextId++, year: state.currentYear, type: 'income', date: today, desc: `${activeUnit} ${state.currentYear} ${month} 管理費`, amount: 1500 });
   }
-  saveData();
-  render();
-  openUnitSheet(activeUnit);
+  saveData(); render(); openUnitSheet(activeUnit);
 }
 
 let activeType = 'income';
 function openSheet(type) {
-  activeType = type;
-  document.getElementById('record-sheet-title').textContent = type === 'income' ? '新增收入' : '新增支出';
+  activeType = type; document.getElementById('record-sheet-title').textContent = type === 'income' ? '新增收入' : '新增支出';
   document.getElementById('rec-date').value = new Date().toISOString().split('T')[0];
-  document.getElementById('rec-desc').value = '';
-  document.getElementById('rec-amount').value = '';
+  document.getElementById('rec-desc').value = ''; document.getElementById('rec-amount').value = '';
   document.getElementById('record-overlay').classList.add('show');
 }
 
@@ -333,38 +254,22 @@ function submitRecord() {
   const date = document.getElementById('rec-date').value;
   const desc = document.getElementById('rec-desc').value.trim();
   const amount = parseInt(document.getElementById('rec-amount').value);
-  if (!desc || !amount) return alert('請填寫完整內容');
-  
-  state.records.push({
-    id: state.nextId++,
-    year: state.currentYear,
-    type: activeType,
-    date,
-    desc,
-    amount
-  });
-  saveData();
-  render();
-  closeSheet('record');
+  if (!desc || !amount) return;
+  state.records.push({ id: state.nextId++, year: state.currentYear, type: activeType, date, desc, amount });
+  saveData(); render(); closeSheet('record');
 }
 
 function closeSheet(id) { document.getElementById(id+'-overlay').classList.remove('show'); }
 function closeIfOutside(e, id) { if(e.target.id === id) closeSheet(id.replace('-overlay','')); }
-
 function switchTab(tab) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  event.target.classList.add('active');
+  if (event) event.target.classList.add('active');
   document.getElementById('tab-units').style.display = tab === 'units' ? 'block' : 'none';
   document.getElementById('tab-records').style.display = tab === 'records' ? 'block' : 'none';
 }
 
-// 啟動
-loadData();
-render();
-setInterval(() => {
-  const now = new Date();
-  document.getElementById('clock').textContent = now.toTimeString().split(' ')[0];
-}, 1000);
+loadData(); render();
+setInterval(() => { document.getElementById('clock').textContent = new Date().toTimeString().split(' ')[0]; }, 1000);
 </script>
 </body>
 </html>
