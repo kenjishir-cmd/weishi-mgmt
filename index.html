@@ -19,6 +19,7 @@
     --red:#f85149; --red-bg:#2d1215;
     --blue:#58a6ff; --blue-bg:#0c1f35;
     --purple:#d8b4fe;
+    --orange:#ffa500;
     --safe-top:env(safe-area-inset-top,0px);
     --safe-bot:env(safe-area-inset-bottom,0px);
   }
@@ -34,6 +35,9 @@
   .header-time{font-family:'DM Mono'; font-size:16px; color:var(--gold-light); letter-spacing:1px}
   .header-date{font-size:10px; color:var(--text2); margin-top:1px}
   .header-weather { font-size: 10px; color: var(--gold-dim); margin-top: 4px; display: flex; align-items: center; justify-content: flex-end; gap: 6px; }
+
+  /* 離線狀態專用顏色 */
+  .header-weather.offline { color: var(--orange) !important; font-weight: 600; }
 
   .version-bar{background:var(--bg3);border-bottom:1px solid var(--border);padding:4px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
   .version-btn{background:none;border:1px solid var(--border);border-radius:6px;color:var(--text2);font-family:'DM Mono';font-size:10px;padding:3px 8px;cursor:pointer}
@@ -75,11 +79,8 @@
   .record-actions{display:flex;gap:8px;margin-top:10px;padding-top:8px;border-top:1px solid var(--border)}
   .rec-btn{flex:1;padding:8px 0;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);font-size:12px;cursor:pointer}
 
-  /* 樓層模擬結構 */
   .floor-layout { display: flex; flex-direction: column; gap: 12px; padding: 14px 16px; }
   .floor-row { display: grid; grid-template-columns: 1fr 40px 1fr; gap: 8px; align-items: center; }
-  
-  /* 電梯區域 */
   .elevator-shaft { display: flex; flex-direction: column; align-items: center; justify-content: center; }
   .elevator-icon { width: 24px; height: 24px; fill: var(--gold-dim); opacity: 0.6; animation: lift-pulse 3s infinite ease-in-out; }
   @keyframes lift-pulse { 0%, 100% { opacity: 0.4; transform: scale(0.9); } 50% { opacity: 0.8; transform: scale(1.1); fill: var(--gold); } }
@@ -136,7 +137,7 @@
       <div class="header-datetime">
         <div class="header-time" id="clock">--:--:--</div>
         <div class="header-date" id="datedisp">----/--/--</div>
-        <div class="header-weather">
+        <div class="header-weather" id="weather-box">
           <span id="loc-disp">定位中...</span>
           <span id="temp-disp">--°C</span>
         </div>
@@ -145,7 +146,7 @@
   </div>
 
   <div class="version-bar">
-    <button class="version-btn" onclick="openVersionSheet()">v1.9.2 · 更新履歷</button>
+    <button class="version-btn" onclick="openVersionSheet()">v1.9.2a · 更新履歷</button>
     <button class="share-btn" onclick="shareStatus()">📤 分享報表</button>
   </div>
 
@@ -176,7 +177,7 @@
   </div>
 
   <div id="footer-version">
-    <button class="footer-ver-btn" onclick="openVersionSheet()">偉士大樓管委費系統 · v1.9.2</button>
+    <button class="footer-ver-btn" onclick="openVersionSheet()">偉士大樓管委費系統 · v1.9.2a</button>
   </div>
 
   <div id="fab-area">
@@ -192,7 +193,7 @@
 <div class="confirm-overlay" id="confirm-overlay"><div class="confirm-box"><div class="confirm-title" id="confirm-title">確認</div><div class="confirm-msg" id="confirm-msg"></div><div class="confirm-btns"><button class="btn btn-cancel" onclick="confirmNo()">取消</button><button class="btn btn-ok" id="confirm-yes-btn" onclick="confirmYes()">確認</button></div></div></div>
 <div class="overlay" id="version-overlay" onclick="closeIfOutside(event,'version-overlay')">
   <div class="sheet"><div class="sheet-handle"></div><div class="sheet-title">更新履歷</div>
-    <div class="version-item"><span class="version-tag">v1.9.2</span><div class="version-notes"><li>新增住戶管理樓層模擬，視覺化中間電梯位置</li><li>優化電梯區域動畫效果</li></div></div>
+    <div class="version-item"><span class="version-tag">v1.9.2a</span><div class="version-notes"><li>新增離線狀態偵測 (右上角橘色警示)</li><li>優化網路恢復時的自動重載邏輯</li></div></div>
     <button class="btn btn-cancel" style="width:100%;margin-top:10px" onclick="closeSheet('version')">關閉</button>
   </div>
 </div>
@@ -200,14 +201,7 @@
 <script>
 const INIT_BALANCE = 97246;
 const MONTHS = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
-const FLOORS = [
-  { left: '426-6', right: '424-6' },
-  { left: '426-5', right: '424-5' },
-  { left: '426-4', right: '424-4' },
-  { left: '426-3', right: '424-3' },
-  { left: '426-2', right: '424-2' },
-  { left: '426-1', right: '424-1' }
-];
+const FLOORS = [{left:'426-6',right:'424-6'},{left:'426-5',right:'424-5'},{left:'426-4',right:'424-4'},{left:'426-3',right:'424-3'},{left:'426-2',right:'424-2'},{left:'426-1',right:'424-1'}];
 const UNITS = FLOORS.flatMap(f => [f.left, f.right]);
 
 function loadState() {
@@ -230,8 +224,26 @@ function updateClock() {
 }
 setInterval(updateClock, 1000); updateClock();
 
+/* --- 離線偵測邏輯 --- */
+function checkNetworkStatus() {
+  const weatherBox = document.getElementById('weather-box');
+  const locDisp = document.getElementById('loc-disp');
+  const tempDisp = document.getElementById('temp-disp');
+  
+  if (!navigator.onLine) {
+    weatherBox.classList.add('offline');
+    locDisp.textContent = '⚠️ 網路離線';
+    tempDisp.textContent = '(僅限離線操作)';
+  } else {
+    weatherBox.classList.remove('offline');
+    updateWeather(); // 恢復時重新抓取天氣
+  }
+}
+window.addEventListener('online', checkNetworkStatus);
+window.addEventListener('offline', checkNetworkStatus);
+
 async function updateWeather() {
-  if (!navigator.geolocation) return;
+  if (!navigator.onLine || !navigator.geolocation) return;
   navigator.geolocation.getCurrentPosition(async (pos) => {
     try {
       const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}&current_weather=true&hourly=apparent_temperature`);
@@ -242,7 +254,7 @@ async function updateWeather() {
     } catch (e) {}
   });
 }
-updateWeather();
+checkNetworkStatus();
 
 function render() {
   document.getElementById('balance-num').textContent = balance().toLocaleString('zh-TW');
@@ -283,14 +295,7 @@ function getUnitHTML(u) {
 function renderUnits() {
   const el = document.getElementById('unit-grid');
   const elevatorSVG = `<svg class="elevator-icon" viewBox="0 0 24 24"><path d="M7,2L17,2A2,2 0 0,1 19,4V20A2,2 0 0,1 17,22H7A2,2 0 0,1 5,20V4A2,2 0 0,1 7,2M7,4V20H17V4H7M8,6H11V9H8V6M13,6H16V9H13V6M8,11H11V14H8V11M13,11H16V14H13V11M8,16H11V19H8V16M13,16H16V19H13V16Z" /></svg>`;
-  
-  el.innerHTML = FLOORS.map(f => `
-    <div class="floor-row">
-      ${getUnitHTML(f.left)}
-      <div class="elevator-shaft">${elevatorSVG}</div>
-      ${getUnitHTML(f.right)}
-    </div>
-  `).join('');
+  el.innerHTML = FLOORS.map(f => `<div class="floor-row">${getUnitHTML(f.left)}<div class="elevator-shaft">${elevatorSVG}</div>${getUnitHTML(f.right)}</div>`).join('');
 }
 
 function renderHistory() {
