@@ -121,8 +121,9 @@
   .confirm-msg{font-size:13px;color:var(--text2);text-align:center;line-height:1.6;margin-bottom:20px;white-space:pre-line}
   .confirm-btns{display:flex;gap:10px}
   .month-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
-  .month-btn{padding:10px 4px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);font-family:'Noto Sans TC',sans-serif;font-size:12px;cursor:pointer;transition:all .15s;text-align:center;line-height:1.8}
+  .month-btn{padding:10px 4px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);font-family:'Noto Sans TC',sans-serif;font-size:12px;cursor:pointer;transition:all .15s;text-align:center;line-height:1.4}
   .month-btn.paid{background:var(--green-bg);border-color:var(--green);color:var(--green);font-weight:600}
+  .month-btn .month-date-badge { font-size: 9px; font-family: 'DM Mono'; display: block; margin-top: 2px; opacity: 0.8; }
   .month-btn:active{transform:scale(.95)}
   .history-sum{display:flex;gap:10px;padding:14px 16px 0}
   .sum-card{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px}
@@ -159,7 +160,7 @@
   </div>
 
   <div class="version-bar">
-    <button class="version-btn" onclick="openVersionSheet()">v1.6.0 · 更新履歷</button>
+    <button class="version-btn" onclick="openVersionSheet()">v1.7.0 · 更新履歷</button>
   </div>
 
   <div id="offline-banner">
@@ -221,7 +222,7 @@
   </div>
 
   <div id="footer-version">
-    <button class="footer-ver-btn" onclick="openVersionSheet()">偉士大樓管委費系統 · v1.6.0 · 點擊查看更新履歷</button>
+    <button class="footer-ver-btn" onclick="openVersionSheet()">偉士大樓管委費系統 · v1.7.0 · 點擊查看更新履歷</button>
   </div>
 
   <div id="fab-area">
@@ -340,27 +341,20 @@
     <div class="sheet-handle"></div>
     <div class="sheet-title">更新履歷</div>
     <div class="version-item">
-      <div><span class="version-tag latest">v1.6.0</span></div>
+      <div><span class="version-tag latest">v1.7.0</span></div>
       <div class="version-date">2026-05-03</div>
       <ul class="version-notes">
-        <li>新增日期選擇器限制：點擊月份後，只能選擇該月份內的日期</li>
-        <li>自動計算各月起始與結束日，防止 Android 手殘選錯月份</li>
-        <li>繳費狀態現在會顯示實際繳納的具體日期（點開後可見）</li>
+        <li>優化顯示：住戶繳費格子內直接顯示繳費日期（月-日）</li>
+        <li>取消提醒：在取消繳費時，會提示原紀錄日期，防止誤操作</li>
+        <li>介面調整：優化月份格子字體，確保日期顯示美觀</li>
       </ul>
     </div>
     <div class="version-item">
-      <div><span class="version-tag">v1.5.0</span></div>
+      <div><span class="version-tag">v1.6.0</span></div>
       <div class="version-date">2026-05-03</div>
       <ul class="version-notes">
-        <li>住戶繳費改為直接點月份確認／取消</li>
-        <li>月份格只顯示 ✓ 已繳 或 － 未繳，簡單清楚</li>
-      </ul>
-    </div>
-    <div class="version-item">
-      <div><span class="version-tag">v1.4.0</span></div>
-      <div class="version-date">2026-05-03</div>
-      <ul class="version-notes">
-        <li>修正 PWA 自動同步問題，改為 Network First 策略</li>
+        <li>日期限制：點擊月份後，只能選擇該月份內的日期</li>
+        <li>繳費狀態會儲存具體繳納日期</li>
       </ul>
     </div>
     <button class="btn btn-cancel" style="width:100%;margin-top:8px" onclick="closeVersionSheet()">關閉</button>
@@ -561,8 +555,13 @@ function renderUnitMonths(unit) {
   const p = state.payments[unit] || {};
   document.getElementById('unit-month-grid').innerHTML = MONTHS.map(m => {
     const isPaid = !!p[m];
+    let dateStr = '－';
+    if (isPaid) {
+        const d = p[m].split('-');
+        dateStr = d[1] + '-' + d[2]; // 顯示為 05-03 格式
+    }
     return `<button class="month-btn ${isPaid?'paid':''}" onclick="toggleMonth('${unit}','${m}')">
-      ${m}<br>${isPaid ? '✓' : '－'}
+      ${m}<br><span class="month-date-badge">${isPaid ? '✓ '+dateStr : '－'}</span>
     </button>`;
   }).join('');
 }
@@ -571,15 +570,13 @@ function toggleMonth(unit, month) {
   const isPaid = !!state.payments[unit][month];
   
   if (isPaid) {
-    showConfirm('取消繳費', `${unit} ${month}\n標記為【未繳】？\n(原紀錄：${state.payments[unit][month]})`,
+    const origDate = state.payments[unit][month];
+    showConfirm('取消繳費', `${unit} ${month}\n原紀錄日期：${origDate}\n標記為【未繳】？`,
       () => { state.payments[unit][month] = null; saveState(); renderUnitMonths(unit); render(); }, true);
   } else {
-    // --- v1.6.0 鎖定月份日期邏輯 ---
     const now = new Date();
     const year = now.getFullYear();
     const monthIdx = MONTHS.indexOf(month);
-    
-    // 計算該月第一天與最後一天
     const firstDay = `${year}-${String(monthIdx + 1).padStart(2, '0')}-01`;
     const lastDayDate = new Date(year, monthIdx + 1, 0);
     const lastDay = `${year}-${String(monthIdx + 1).padStart(2, '0')}-${String(lastDayDate.getDate()).padStart(2, '0')}`;
@@ -588,7 +585,6 @@ function toggleMonth(unit, month) {
     dateInput.min = firstDay;
     dateInput.max = lastDay;
     
-    // 預設日期
     if (now.getMonth() === monthIdx) {
       dateInput.value = now.toISOString().split('T')[0];
     } else {
@@ -604,7 +600,6 @@ function toggleMonth(unit, month) {
       state.payments[unit][month] = selected;
       saveState(); renderUnitMonths(unit); render(); closeSheet('date-picker');
     };
-    
     openSheet('date-picker');
   }
 }
