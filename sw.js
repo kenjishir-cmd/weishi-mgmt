@@ -1,61 +1,47 @@
-// ── 偉士大樓 Service Worker v1.6.0 ───────────────────────
-// 採用 Network First 策略：優先抓取網路新版，斷網時才用快取。
+// ── 偉士大樓 萬用自動更新 Service Worker ──────────────────────
+const CACHE_NAME = 'weishi-mgmt-universal-cache';
 
-const CACHE_NAME = 'weishi-mgmt-v1.6.0';
-
-// 需要快取的靜態資源
-const PRE_CACHE_RESOURCES = [
-  './',
-  './index.html',
-  './manifest.json',
-  'https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500&family=DM+Mono&display=swap'
-];
-
-// 1. 安裝：存入基本資源
+// 1. 安裝階段：不設定特定的版本清單，讓它在 Fetch 時動態捕捉
 self.addEventListener('install', e => {
-  e.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(PRE_CACHE_RESOURCES))
-  );
-  self.skipWaiting(); // 強制跳過等待，立刻更新
+  self.skipWaiting(); 
 });
 
-// 2. 激活：清除舊版的快取垃圾
+// 2. 激活階段：清理不屬於目前 CACHE_NAME 的舊快取
 self.addEventListener('activate', e => {
   e.waitUntil(
     caches.keys().then(keys => {
       return Promise.all(
         keys.map(key => {
-          if (key !== CACHE_NAME) {
-            console.log('[SW] 刪除舊快取:', key);
-            return caches.delete(key);
-          }
+          if (key !== CACHE_NAME) return caches.delete(key);
         })
       );
     })
   );
-  self.clients.claim(); // 立刻接管頁面
+  self.clients.claim();
 });
 
-// 3. 抓取：網路優先 (Network First)
+// 3. 核心邏輯：Stale-While-Revalidate (先用快取秒開，同時背景抓新版)
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
+  if (!e.request.url.startsWith('http')) return;
 
   e.respondWith(
-    fetch(e.request)
-      .then(networkRes => {
-        // 如果網路通暢，更新快取並回傳
-        if (networkRes && networkRes.status === 200) {
-          const cacheCopy = networkRes.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(e.request, cacheCopy));
+    caches.match(e.request).then(cachedResponse => {
+      // 建立一個網路請求，用來更新快取
+      const networkFetch = fetch(e.request).then(networkResponse => {
+        if (networkResponse && networkResponse.status === 200) {
+          const cacheCopy = networkResponse.clone();
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(e.request, cacheCopy);
+          });
         }
-        return networkRes;
-      })
-      .catch(() => {
-        // 如果網路斷線，嘗試從快取拿資料
-        return caches.match(e.request).then(cached => {
-          // 如果快取有就給快取，都沒有就給首頁
-          return cached || caches.match('./index.html');
-        });
-      })
+        return networkResponse;
+      }).catch(() => {
+        // 斷網時的靜默錯誤處理
+      });
+
+      // 如果有快取就先給快取（秒開），沒有就等網路請求
+      return cachedResponse || networkFetch;
+    })
   );
 });
