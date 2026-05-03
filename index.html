@@ -36,7 +36,6 @@
   .header-date{font-size:10px; color:var(--text2); margin-top:1px}
   .header-weather { font-size: 10px; color: var(--gold-dim); margin-top: 4px; display: flex; align-items: center; justify-content: flex-end; gap: 6px; }
 
-  /* 離線狀態專用顏色 */
   .header-weather.offline { color: var(--orange) !important; font-weight: 600; }
 
   .version-bar{background:var(--bg3);border-bottom:1px solid var(--border);padding:4px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
@@ -146,7 +145,7 @@
   </div>
 
   <div class="version-bar">
-    <button class="version-btn" onclick="openVersionSheet()">v1.9.2a · 更新履歷</button>
+    <button class="version-btn" onclick="openVersionSheet()">v1.9.3 · 日期鎖定</button>
     <button class="share-btn" onclick="shareStatus()">📤 分享報表</button>
   </div>
 
@@ -177,7 +176,7 @@
   </div>
 
   <div id="footer-version">
-    <button class="footer-ver-btn" onclick="openVersionSheet()">偉士大樓管委費系統 · v1.9.2a</button>
+    <button class="footer-ver-btn" onclick="openVersionSheet()">偉士大樓管委費系統 · v1.9.3</button>
   </div>
 
   <div id="fab-area">
@@ -189,11 +188,30 @@
 <div class="overlay" id="income-overlay" onclick="closeIfOutside(event,'income-overlay')"><div class="sheet"><div class="sheet-handle"></div><div class="sheet-title">新增收入</div><div class="form-group"><label class="form-label">日期</label><input type="date" class="form-input" id="income-date"></div><div class="form-group"><label class="form-label">說明</label><input type="text" class="form-input" id="income-desc"></div><div class="form-group"><label class="form-label">金額</label><input type="number" class="form-input" id="income-amount" inputmode="numeric"></div><div class="form-btns"><button class="btn btn-cancel" onclick="closeSheet('income')">取消</button><button class="btn btn-ok" onclick="submitRecord('income')">確認</button></div></div></div>
 <div class="overlay" id="expense-overlay" onclick="closeIfOutside(event,'expense-overlay')"><div class="sheet"><div class="sheet-handle"></div><div class="sheet-title">新增支出</div><div class="form-group"><label class="form-label">日期</label><input type="date" class="form-input" id="expense-date"></div><div class="form-group"><label class="form-label">說明</label><input type="text" class="form-input" id="expense-desc"></div><div class="form-group"><label class="form-label">金額</label><input type="number" class="form-input" id="expense-amount" inputmode="numeric"></div><div class="form-btns"><button class="btn btn-cancel" onclick="closeSheet('expense')">取消</button><button class="btn btn-ok" onclick="submitRecord('expense')" style="background:var(--red);color:#fff">確認</button></div></div></div>
 <div class="overlay" id="unit-overlay" onclick="closeIfOutside(event,'unit-overlay')"><div class="sheet"><div class="sheet-handle"></div><div class="sheet-title" id="unit-sheet-title">繳費清單</div><div class="month-grid" id="unit-month-grid"></div><button class="btn btn-cancel" style="width:100%" onclick="closeSheet('unit')">關閉</button></div></div>
-<div class="overlay" id="date-picker-overlay" onclick="closeIfOutside(event,'date-picker-overlay')"><div class="sheet"><div class="sheet-handle"></div><div class="sheet-title">選擇日期</div><div class="form-group"><input type="date" class="form-input" id="constrained-date"></div><div class="form-btns"><button class="btn btn-cancel" onclick="closeSheet('date-picker')">取消</button><button class="btn btn-ok" id="date-picker-confirm-btn">確認</button></div></div></div>
+
+<div class="overlay" id="date-picker-overlay" onclick="closeIfOutside(event,'date-picker-overlay')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" id="date-picker-title">選擇繳費日期</div>
+    <div class="form-group">
+      <label class="form-label">日期 (限制於該月份)</label>
+      <input type="date" class="form-input" id="constrained-date">
+    </div>
+    <div class="form-btns">
+      <button class="btn btn-cancel" onclick="closeSheet('date-picker')">取消</button>
+      <button class="btn btn-ok" id="date-picker-confirm-btn">確認</button>
+    </div>
+  </div>
+</div>
+
 <div class="confirm-overlay" id="confirm-overlay"><div class="confirm-box"><div class="confirm-title" id="confirm-title">確認</div><div class="confirm-msg" id="confirm-msg"></div><div class="confirm-btns"><button class="btn btn-cancel" onclick="confirmNo()">取消</button><button class="btn btn-ok" id="confirm-yes-btn" onclick="confirmYes()">確認</button></div></div></div>
+
 <div class="overlay" id="version-overlay" onclick="closeIfOutside(event,'version-overlay')">
   <div class="sheet"><div class="sheet-handle"></div><div class="sheet-title">更新履歷</div>
-    <div class="version-item"><span class="version-tag">v1.9.2a</span><div class="version-notes"><li>新增離線狀態偵測 (右上角橘色警示)</li><li>優化網路恢復時的自動重載邏輯</li></div></div>
+    <div class="version-item">
+      <span class="version-tag">v1.9.3</span>
+      <div class="version-notes"><li>住戶繳費日期限制：點選月份後，僅能選擇該月份內日期。</li><li>優化日期選擇器邏輯，自動跳轉該月首日。</li></div>
+    </div>
     <button class="btn btn-cancel" style="width:100%;margin-top:10px" onclick="closeSheet('version')">關閉</button>
   </div>
 </div>
@@ -224,19 +242,15 @@ function updateClock() {
 }
 setInterval(updateClock, 1000); updateClock();
 
-/* --- 離線偵測邏輯 --- */
 function checkNetworkStatus() {
   const weatherBox = document.getElementById('weather-box');
   const locDisp = document.getElementById('loc-disp');
   const tempDisp = document.getElementById('temp-disp');
-  
   if (!navigator.onLine) {
     weatherBox.classList.add('offline');
-    locDisp.textContent = '⚠️ 網路離線';
-    tempDisp.textContent = '(僅限離線操作)';
+    locDisp.textContent = '⚠️ 網路離線'; tempDisp.textContent = '(僅限離線操作)';
   } else {
-    weatherBox.classList.remove('offline');
-    updateWeather(); // 恢復時重新抓取天氣
+    weatherBox.classList.remove('offline'); updateWeather();
   }
 }
 window.addEventListener('online', checkNetworkStatus);
@@ -249,8 +263,7 @@ async function updateWeather() {
       const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}&current_weather=true&hourly=apparent_temperature`);
       const data = await res.json();
       document.getElementById('temp-disp').textContent = `${data.hourly.apparent_temperature[0]}°C (體感)`;
-      const lat = pos.coords.latitude; const lon = pos.coords.longitude;
-      document.getElementById('loc-disp').textContent = (lat > 23.6 && lat < 23.8 && lon > 120.4 && lon < 120.6) ? '斗六市' : '目前位置';
+      document.getElementById('loc-disp').textContent = '斗六市';
     } catch (e) {}
   });
 }
@@ -350,7 +363,7 @@ function submitRecord(type) {
 function deleteRecord(id) { showConfirm('刪除確認', '確定要刪除這筆紀錄嗎？', () => { state.records = state.records.filter(x => x.id !== id); let b = INIT_BALANCE; state.records.forEach(rec => { b += rec.type==='income' ? rec.amount : -rec.amount; rec.balanceAfter = b; }); saveState(); render(); }, true); }
 
 function openUnitSheet(unit) {
-  activeUnit = unit; document.getElementById('unit-sheet-title').textContent = unit;
+  activeUnit = unit; document.getElementById('unit-sheet-title').textContent = unit + ' 繳費紀錄';
   const p = state.payments[unit] || {};
   document.getElementById('unit-month-grid').innerHTML = MONTHS.map(m => {
     const isPaid = !!p[m];
@@ -358,12 +371,32 @@ function openUnitSheet(unit) {
   }).join('');
   document.getElementById('unit-overlay').classList.add('show');
 }
+
+/* --- 修改處：限制日期選擇器僅能選擇該月份 --- */
 function toggleMonth(unit, month) {
   const isPaid = !!state.payments[unit][month];
-  if (isPaid) showConfirm('取消確認', `取消 ${unit} ${month} 繳費？`, () => { state.payments[unit][month] = null; saveState(); render(); openUnitSheet(unit); }, true);
-  else {
-    const dateInput = document.getElementById('constrained-date'); dateInput.value = new Date().toISOString().split('T')[0];
-    document.getElementById('date-picker-confirm-btn').onclick = () => { state.payments[unit][month] = dateInput.value; saveState(); render(); openUnitSheet(unit); closeSheet('date-picker'); };
+  if (isPaid) {
+    showConfirm('取消確認', `取消 ${unit} ${month} 繳費？`, () => { state.payments[unit][month] = null; saveState(); render(); openUnitSheet(unit); }, true);
+  } else {
+    const year = new Date().getFullYear();
+    const monthIndex = MONTHS.indexOf(month); // 0-11
+    
+    // 計算該月第一天與最後一天
+    const firstDay = new Date(year, monthIndex, 1);
+    const lastDay = new Date(year, monthIndex + 1, 0);
+    
+    const formatDate = (date) => date.toISOString().split('T')[0];
+    
+    const dateInput = document.getElementById('constrained-date');
+    dateInput.value = formatDate(firstDay); // 預設為該月 1 號
+    dateInput.min = formatDate(firstDay);   // 最小值鎖定該月 1 號
+    dateInput.max = formatDate(lastDay);    // 最大值鎖定該月最後一天
+    
+    document.getElementById('date-picker-title').textContent = `${unit} - ${month} 繳費日期`;
+    document.getElementById('date-picker-confirm-btn').onclick = () => {
+      state.payments[unit][month] = dateInput.value;
+      saveState(); render(); openUnitSheet(unit); closeSheet('date-picker');
+    };
     openSheet('date-picker');
   }
 }
