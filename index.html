@@ -161,7 +161,7 @@
   </div>
 
   <div class="version-bar">
-    <button class="version-btn" onclick="openVersionSheet()">v2.0.2 · 標題修正</button>
+    <button class="version-btn" onclick="openVersionSheet()">v2.0.2 · 離線優化</button>
     <button class="share-btn" onclick="shareStatus()">📤 分享報表</button>
   </div>
 
@@ -221,10 +221,11 @@
 
     <div class="version-item">
       <div><span class="version-tag latest">v2.0.2</span></div>
-      <div class="version-vdate">2026-05-03</div>
+      <div class="version-vdate">2026-05-04</div>
       <ul class="version-notes">
-        <li>標題簡化為「管理費收支系統」</li>
-        <li>維持體感溫度穩定抓取與定時重抓邏輯</li>
+        <li>新增 PWA Service Worker 註冊，支援完全離線使用</li>
+        <li>採用 Stale-While-Revalidate 策略，兼顧秒開與更新</li>
+        <li>修復離線狀態下的資源快取路徑</li>
       </ul>
     </div>
 
@@ -233,7 +234,7 @@
       <div class="version-vdate">2026-05-03</div>
       <ul class="version-notes">
         <li>修復體感溫度抓取邏輯，對應當前小時數據</li>
-        <li>加入 API 強制不快取參數，並設定每 30 分鐘自動重抓</li>
+        <li>設定每 30 分鐘自動重抓氣象數據</li>
       </ul>
     </div>
 
@@ -241,27 +242,7 @@
       <div><span class="version-tag">v2.0.0</span></div>
       <div class="version-vdate">2026-05-03</div>
       <ul class="version-notes">
-        <li>新增年份切換器，可查看任意年度繳費與帳務</li>
-        <li>住戶繳費資料依年份獨立儲存，歷年資料不互蓋</li>
-        <li>年份列顯示「回本年」快速鍵，當年高亮顯示</li>
-      </ul>
-    </div>
-
-    <div class="version-item">
-      <div><span class="version-tag">v1.9.3</span></div>
-      <div class="version-vdate">2026-04-01</div>
-      <ul class="version-notes">
-        <li>住戶繳費日期限制：點選月份後，僅能選擇該月份內日期</li>
-        <li>優化日期選擇器邏輯，自動跳轉該月首日</li>
-      </ul>
-    </div>
-
-    <div class="version-item">
-      <div><span class="version-tag">v1.3.0</span></div>
-      <div class="version-vdate">2026-03-01</div>
-      <ul class="version-notes">
-        <li>帳務記錄新增編輯與刪除功能</li>
-        <li>呼吸電梯與定位天氣功能整合</li>
+        <li>新增年份切換器，住戶繳費資料依年份獨立儲存</li>
       </ul>
     </div>
 
@@ -270,6 +251,18 @@
 </div>
 
 <script>
+// ── 1. 註冊 Service Worker ───────────────────────────────
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').then(reg => {
+      console.log('PWA 已上線');
+    }).catch(err => {
+      console.log('PWA 註冊失敗', err);
+    });
+  });
+}
+
+// ── 2. 帳務核心邏輯 ─────────────────────────────────────
 const INIT_BALANCE = 97246;
 const MONTHS = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
 const FLOORS = [{left:'426-6',right:'424-6'},{left:'426-5',right:'424-5'},{left:'426-4',right:'424-4'},{left:'426-3',right:'424-3'},{left:'426-2',right:'424-2'},{left:'426-1',right:'424-1'}];
@@ -467,7 +460,7 @@ function toggleMonth(unit, month) {
     const monthIndex = MONTHS.indexOf(month); const firstDay = new Date(selectedYear, monthIndex, 1); const lastDay = new Date(selectedYear, monthIndex + 1, 0);
     const fmt = d => d.toISOString().split('T')[0]; const dateInput = document.getElementById('constrained-date');
     dateInput.value = fmt(firstDay); dateInput.min = fmt(firstDay); dateInput.max = fmt(lastDay);
-    document.getElementById('date-picker-confirm-btn').onclick = () => { state.payments[unit][monthIndex];
+    document.getElementById('date-picker-confirm-btn').onclick = () => { 
       state.payments[unit][selectedYear][month] = dateInput.value; saveState(); render(); openUnitSheet(unit); closeSheet('date-picker'); };
     openSheet('date-picker');
   }
