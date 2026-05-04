@@ -1,60 +1,61 @@
-// ── 偉士大樓 萬用自動更新 Service Worker v2.0.2 ──────────────────
-// 優化點：確保安裝時預抓 index.html，解決初次離線可能打不開的問題。
-
-const CACHE_NAME = 'weishi-mgmt-v2.0.2';
-const PRE_CACHE = [
+// ── 偉士大樓 Service Worker ──────────────────────────
+// 策略：Cache First + Stale-While-Revalidate
+// 每次改版只需更新 CACHE_VERSION
+const CACHE_VERSION = 'weishi-v4';
+const CACHE_URLS = [
   './',
   './index.html',
-  './manifest.json'
+  './manifest.json',
+  'https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500&family=DM+Mono&display=swap'
 ];
 
-// 1. 安裝階段：立刻接管，並預抓核心檔案
+// ── INSTALL：預快取核心資源 ───────────────────────────
 self.addEventListener('install', e => {
   e.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(PRE_CACHE))
+    caches.open(CACHE_VERSION).then(cache =>
+      Promise.allSettled(
+        CACHE_URLS.map(url => cache.add(url).catch(() => {}))
+      )
+    )
   );
   self.skipWaiting();
 });
 
-// 2. 激活階段：清理舊快取垃圾
+// ── ACTIVATE：清除舊快取 ──────────────────────────────
 self.addEventListener('activate', e => {
   e.waitUntil(
-    caches.keys().then(keys => {
-      return Promise.all(
-        keys.map(key => {
-          if (key !== CACHE_NAME) return caches.delete(key);
-        })
-      );
-    })
+    caches.keys().then(keys =>
+      Promise.all(keys.filter(k => k !== CACHE_VERSION).map(k => caches.delete(k)))
+    )
   );
   self.clients.claim();
 });
 
-// 3. 核心邏輯：Stale-While-Revalidate (快取秒開 + 背景靜默更新)
+// ── FETCH：Cache First，背景更新 ─────────────────────
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
-  
-  // 排除外站請求（如天氣 API 不快取，確保溫度是活的）
-  if (!e.request.url.includes(self.location.origin) && !e.request.url.includes('fonts.googleapis.com')) {
-    return;
-  }
+  if (!e.request.url.startsWith('http')) return;
 
   e.respondWith(
-    caches.match(e.request).then(cachedResponse => {
-      const networkFetch = fetch(e.request).then(networkResponse => {
-        if (networkResponse && networkResponse.status === 200) {
-          const cacheCopy = networkResponse.clone();
-          caches.open(CACHE_NAME).then(cache => {
-            cache.put(e.request, cacheCopy);
-          });
-        }
-        return networkResponse;
-      }).catch(() => {
-        // 斷網時不報錯
-      });
-
-      // 有快取給快取，沒快取等網路
-      return cachedResponse || networkFetch;
+    caches.match(e.request).then(cached => {
+      // 有快取 → 立即回傳，同時背景偷偷更新
+      if (cached) {
+        fetch(e.request).then(res => {
+          if (res && res.status === 200)
+            caches.open(CACHE_VERSION).then(c => c.put(e.request, res));
+        }).catch(() => {});
+        return cached;
+      }
+      // 沒快取 → 嘗試網路，成功就存快取
+      return fetch(e.request).then(res => {
+        if (res && res.status === 200)
+          caches.open(CACHE_VERSION).then(c => c.put(e.request, res.clone()));
+        return res;
+      }).catch(() => caches.match('./index.html'));
     })
   );
+});
+
+self.addEventListener('message', e => {
+  if (e.data === 'SKIP_WAITING') self.skipWaiting();
 });
