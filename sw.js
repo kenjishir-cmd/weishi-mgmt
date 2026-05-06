@@ -1,37 +1,90 @@
-const CACHE_VERSION = 'weishi-v5';
-
+const CACHE_VERSION = 'weishi-v6';
 const CACHE_URLS = [
-  '/weishi-mgmt/',
-  '/weishi-mgmt/index.html',
-  '/weishi-mgmt/manifest.json'
+  './index.html',
+  './index.html?v=6',
+  './manifest.json',
+  './sw.js',
+  // Google Fonts CSS
+  'https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500&family=DM+Mono&display=swap'
 ];
 
+// ── INSTALL：預快取所有核心資源 ──────────────────────
 self.addEventListener('install', e => {
   e.waitUntil(
     caches.open(CACHE_VERSION).then(cache =>
-      cache.addAll(CACHE_URLS)
-    )
+      Promise.allSettled(
+        CACHE_URLS.map(url =>
+          cache.add(url).catch(err => console.warn('[SW] cache.add failed:', url, err))
+        )
+      )
+    ).then(() => console.log('[SW] Install complete:', CACHE_VERSION))
   );
   self.skipWaiting();
 });
 
+// ── ACTIVATE：清除所有舊版快取 ───────────────────────
 self.addEventListener('activate', e => {
   e.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE_VERSION).map(k => caches.delete(k)))
-    )
+    caches.keys().then(keys => {
+      console.log('[SW] Existing caches:', keys);
+      return Promise.all(
+        keys.filter(k => k !== CACHE_VERSION).map(k => {
+          console.log('[SW] Deleting old cache:', k);
+          return caches.delete(k);
+        })
+      );
+    }).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
+// ── FETCH：Cache First + 背景更新 ────────────────────
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
+  if (!e.request.url.startsWith('http')) return;
+
+  // chrome-extension 等略過
+  if (e.request.url.startsWith('chrome-extension')) return;
 
   e.respondWith(
-    caches.match(e.request).then(res => {
-      return res || fetch(e.request).catch(() =>
-        caches.match('/weishi-mgmt/index.html')
-      );
+    caches.match(e.request, { ignoreSearch: false }).then(cached => {
+
+      // ── 有快取：立即回傳，背景偷偷更新 ──
+      if (cached) {
+        const bgFetch = fetch(e.request).then(res => {
+          if (res && res.status === 200) {
+            caches.open(CACHE_VERSION).then(c => c.put(e.request, res.clone()));
+          }
+          return res;
+        }).catch(() => {});
+        return cached;
+      }
+
+      // ── 沒快取：嘗試網路，成功就存入快取 ──
+      return fetch(e.request).then(res => {
+        if (res && res.status === 200) {
+          const resClone = res.clone();
+          caches.open(CACHE_VERSION).then(c => c.put(e.request, resClone));
+        }
+        return res;
+      }).catch(() => {
+        // 完全離線且無快取 → 回傳 index.html
+        return caches.match('./index.html').then(fallback => {
+          if (fallback) return fallback;
+          // 最後防線：回傳簡單提示頁
+          return new Response(
+            '<html><body style="background:#0d1117;color:#e6edf3;font-family:sans-serif;text-align:center;padding:60px"><h2>⚠️ 離線中</h2><p>請連線後重新開啟</p></body></html>',
+            { headers: { 'Content-Type': 'text/html; charset=utf-8' } }
+          );
+        });
+      });
     })
   );
+});
+
+// ── 接收主頁面訊息 ────────────────────────────────────
+self.addEventListener('message', e => {
+  if (e.data === 'SKIP_WAITING') {
+    console.log('[SW] SKIP_WAITING received');
+    self.skipWaiting();
+  }
 });
