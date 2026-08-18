@@ -175,7 +175,7 @@
   </div>
 
   <div class="version-bar">
-    <button class="version-btn" onclick="openVersionSheet()">v2.1.0 · 離線強化</button>
+    <button class="version-btn" onclick="openVersionSheet()">v2.1.1 · 期初結餘改手動</button>
     <button class="share-btn" onclick="shareStatus()">📤 分享報表</button>
   </div>
 
@@ -213,7 +213,7 @@
   </div>
 
   <div id="footer-version">
-    <button class="footer-ver-btn" onclick="openVersionSheet()">偉士大樓管委費系統 · v2.1.0 · 點擊查看更新履歷</button>
+    <button class="footer-ver-btn" onclick="openVersionSheet()">偉士大樓管委費系統 · v2.1.1 · 點擊查看更新履歷</button>
   </div>
 
   <div id="fab-area">
@@ -275,7 +275,15 @@
   <div class="sheet"><div class="sheet-handle"></div><div class="sheet-title">更新履歷</div>
 
     <div class="version-item">
-      <div><span class="version-tag latest">v2.1.0</span></div>
+      <div><span class="version-tag latest">v2.1.1</span></div>
+      <div class="version-vdate">2026-08-18</div>
+      <ul class="version-notes">
+        <li>期初結餘歸零，改為手動新增「期初結餘」收入紀錄</li>
+      </ul>
+    </div>
+
+    <div class="version-item">
+      <div><span class="version-tag">v2.1.0</span></div>
       <div class="version-vdate">2026-05-05</div>
       <ul class="version-notes">
         <li>PWA 離線強化：Cache First 策略，斷網也能秒開與正常使用</li>
@@ -329,7 +337,7 @@
 
 <script>
 // ── CONSTANTS ─────────────────────────────────────────
-const INIT_BALANCE = 97246;
+const INIT_BALANCE = 0; // 期初結餘已歸零，請改用「＋ 收入」手動新增「期初結餘」金額
 const MONTHS = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
 const FLOORS = [
   {left:'426-6',right:'424-6'},{left:'426-5',right:'424-5'},
