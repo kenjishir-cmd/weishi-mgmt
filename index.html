@@ -175,7 +175,7 @@
   </div>
 
   <div class="version-bar">
-    <button class="version-btn" onclick="openVersionSheet()">v2.1.1 · 期初結餘改手動</button>
+    <button class="version-btn" onclick="openVersionSheet()">v2.1.2 · 報表左右對照</button>
     <button class="share-btn" onclick="shareStatus()">📤 分享報表</button>
   </div>
 
@@ -213,7 +213,7 @@
   </div>
 
   <div id="footer-version">
-    <button class="footer-ver-btn" onclick="openVersionSheet()">偉士大樓管委費系統 · v2.1.1 · 點擊查看更新履歷</button>
+    <button class="footer-ver-btn" onclick="openVersionSheet()">偉士大樓管委費系統 · v2.1.2 · 點擊查看更新履歷</button>
   </div>
 
   <div id="fab-area">
@@ -275,7 +275,15 @@
   <div class="sheet"><div class="sheet-handle"></div><div class="sheet-title">更新履歷</div>
 
     <div class="version-item">
-      <div><span class="version-tag latest">v2.1.1</span></div>
+      <div><span class="version-tag latest">v2.1.2</span></div>
+      <div class="version-vdate">2026-08-18</div>
+      <ul class="version-notes">
+        <li>分享報表改為左426右424逐層並排顯示，方便對照樓層繳費狀況</li>
+      </ul>
+    </div>
+
+    <div class="version-item">
+      <div><span class="version-tag">v2.1.1</span></div>
       <div class="version-vdate">2026-08-18</div>
       <ul class="version-notes">
         <li>期初結餘歸零，改為手動新增「期初結餘」收入紀錄</li>
@@ -517,10 +525,14 @@ function shareStatus() {
   getYearPayments(selectedYear);
   const now = new Date();
   let text = `🏢 偉士大樓繳費報表 ${selectedYear}年 (${now.getMonth()+1}/${now.getDate()})\n--------------------\n`;
-  UNITS.forEach(u => {
-    const p = state.payments[u][selectedYear] || {};
-    const pm = MONTHS.filter(m => p[m]);
-    text += pm.length > 0 ? `✅ ${u}：最新繳費 ${p[pm[pm.length-1]]}\n` : `❌ ${u}：尚未繳費\n`;
+  FLOORS.forEach(f => {
+    const lp = state.payments[f.left][selectedYear] || {};
+    const rp = state.payments[f.right][selectedYear] || {};
+    const lm = MONTHS.filter(m => lp[m]);
+    const rm = MONTHS.filter(m => rp[m]);
+    const lLine = lm.length > 0 ? `✅ ${f.left}：${lp[lm[lm.length-1]]}` : `❌ ${f.left}：尚未繳費`;
+    const rLine = rm.length > 0 ? `✅ ${f.right}：${rp[rm[rm.length-1]]}` : `❌ ${f.right}：尚未繳費`;
+    text += `${lLine}　|　${rLine}\n`;
   });
   text += `\n結餘：NT$ ${balance().toLocaleString()}`;
   if (navigator.share) navigator.share({ title: '報表', text });
