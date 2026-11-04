@@ -175,7 +175,7 @@
   </div>
 
   <div class="version-bar">
-    <button class="version-btn" onclick="openVersionSheet()">v2.1.3 · 報表精簡防換行</button>
+    <button class="version-btn" onclick="openVersionSheet()">v2.2.1 · 報表加回日期</button>
     <button class="share-btn" onclick="shareStatus()">📤 分享報表</button>
   </div>
 
@@ -213,7 +213,7 @@
   </div>
 
   <div id="footer-version">
-    <button class="footer-ver-btn" onclick="openVersionSheet()">偉士大樓管委費系統 · v2.1.3 · 點擊查看更新履歷</button>
+    <button class="footer-ver-btn" onclick="openVersionSheet()">偉士大樓管委費系統 · v2.2.1 · 點擊查看更新履歷</button>
   </div>
 
   <div id="fab-area">
@@ -254,6 +254,7 @@
 <div class="overlay" id="date-picker-overlay" onclick="closeIfOutside(event,'date-picker-overlay')">
   <div class="sheet"><div class="sheet-handle"></div><div class="sheet-title" id="date-picker-title">選擇繳費日期</div>
     <div class="form-group"><label class="form-label">日期（限制於該月份）</label><input type="date" class="form-input" id="constrained-date"></div>
+    <div class="form-group"><label class="form-label">收款金額</label><input type="number" class="form-input" id="constrained-amount" inputmode="numeric" placeholder="例如 1200"></div>
     <div class="form-btns"><button class="btn btn-cancel" onclick="closeSheet('date-picker')">取消</button><button class="btn btn-ok" id="date-picker-confirm-btn">確認</button></div>
   </div>
 </div>
@@ -275,7 +276,24 @@
   <div class="sheet"><div class="sheet-handle"></div><div class="sheet-title">更新履歷</div>
 
     <div class="version-item">
-      <div><span class="version-tag latest">v2.1.3</span></div>
+      <div><span class="version-tag latest">v2.2.1</span></div>
+      <div class="version-vdate">2026-11-04</div>
+      <ul class="version-notes">
+        <li>分享報表每戶同時顯示繳費日期與金額（第二行），避免 LINE 換行</li>
+      </ul>
+    </div>
+
+    <div class="version-item">
+      <div><span class="version-tag">v2.2.0</span></div>
+      <div class="version-vdate">2026-11-04</div>
+      <ul class="version-notes">
+        <li>登記繳費時新增「收款金額」欄位，每戶每月獨立記錄</li>
+        <li>分享報表每戶顯示今年累計收款金額，底部由結餘改為合計收入</li>
+      </ul>
+    </div>
+
+    <div class="version-item">
+      <div><span class="version-tag">v2.1.3</span></div>
       <div class="version-vdate">2026-08-18</div>
       <ul class="version-notes">
         <li>分享報表文字精簡，避免手機LINE視窗過窄造成左右樓層自動換行</li>
@@ -372,6 +390,7 @@ function loadState() {
   return { records: [], payments, nextId: 1 };
 }
 let state = loadState();
+if (!state.amounts) state.amounts = {}; // v2.2.0 新增：各戶各月收款金額
 function saveState() { localStorage.setItem('weishi-state-v2', JSON.stringify(state)); }
 
 // migrate 舊格式（月份直接當 key）→ 新格式（年份包覆）
@@ -393,6 +412,14 @@ function migratePayments() {
   });
 }
 migratePayments();
+
+function getAmt(u, yr, m) { return (state.amounts[u] && state.amounts[u][yr] && state.amounts[u][yr][m]) || 0; }
+function setAmt(u, yr, m, v) {
+  if (!state.amounts[u]) state.amounts[u] = {};
+  if (!state.amounts[u][yr]) state.amounts[u][yr] = {};
+  if (v) state.amounts[u][yr][m] = v; else delete state.amounts[u][yr][m];
+}
+function unitYearTotal(u, yr) { return MONTHS.reduce((s, m) => s + getAmt(u, yr, m), 0); }
 
 function getYearPayments(year) {
   UNITS.forEach(u => {
@@ -533,16 +560,24 @@ function shareStatus() {
   getYearPayments(selectedYear);
   const now = new Date();
   let text = `🏢 偉士大樓繳費報表 ${selectedYear}年 (${now.getMonth()+1}/${now.getDate()})\n--------------------\n`;
+  let sum = 0;
+  // 回傳 [第一行(狀態+戶號), 第二行(日期+金額)]
+  const cell = u => {
+    const p = state.payments[u][selectedYear] || {};
+    const pm = MONTHS.filter(m => p[m]);
+    if (!pm.length) return [`❌${u}`, ''];
+    const t = unitYearTotal(u, selectedYear);
+    sum += t;
+    const d = p[pm[pm.length-1]];
+    const dd = d.length >= 10 ? d.substring(5).replace('-', '/') : d;
+    return [`✅${u}`, `${dd} ${t ? '$' + t.toLocaleString() : '–'}`];
+  };
   FLOORS.forEach(f => {
-    const lp = state.payments[f.left][selectedYear] || {};
-    const rp = state.payments[f.right][selectedYear] || {};
-    const lm = MONTHS.filter(m => lp[m]);
-    const rm = MONTHS.filter(m => rp[m]);
-    const lTxt = lm.length > 0 ? `✅${f.left}(${lp[lm[lm.length-1]].slice(5)})` : `❌${f.left}`;
-    const rTxt = rm.length > 0 ? `✅${f.right}(${rp[rm[rm.length-1]].slice(5)})` : `❌${f.right}`;
-    text += `${lTxt}　${rTxt}\n`;
+    const L = cell(f.left), R = cell(f.right);
+    text += `${L[0]}　${R[0]}\n`;
+    if (L[1] || R[1]) text += `${L[1] || '－'}　${R[1] || '－'}\n`;
   });
-  text += `\n結餘：NT$ ${balance().toLocaleString()}`;
+  text += `\n合計收入：NT$ ${sum.toLocaleString()}`;
   if (navigator.share) navigator.share({ title: '報表', text });
   else { navigator.clipboard.writeText(text); alert('報表已複製！'); }
 }
@@ -617,7 +652,7 @@ function openUnitSheet(unit) {
     const isPaid = !!p[m];
     const shortDate = isPaid && p[m].length>=7 ? p[m].substring(5) : (p[m]||'');
     return `<button class="month-btn ${isPaid?'paid':''}" onclick="toggleMonth('${unit}','${m}')">
-      ${m}${isPaid?`<br><small style="color:var(--purple)">✓ ${shortDate}</small>`:''}
+      ${m}${isPaid?`<br><small style="color:var(--purple)">✓ ${shortDate}</small>${getAmt(unit,selectedYear,m)?`<br><small>$${getAmt(unit,selectedYear,m).toLocaleString()}</small>`:''}`:''}
     </button>`;
   }).join('');
   document.getElementById('unit-overlay').classList.add('show');
@@ -629,6 +664,7 @@ function toggleMonth(unit, month) {
   if (isPaid) {
     showConfirm('取消確認', `取消 ${unit} ${month} (${selectedYear}年) 繳費？`, () => {
       state.payments[unit][selectedYear][month] = null;
+      setAmt(unit, selectedYear, month, 0);
       saveState(); render(); openUnitSheet(unit);
     }, true);
   } else {
@@ -640,9 +676,13 @@ function toggleMonth(unit, month) {
     dateInput.value = fmt(firstDay);
     dateInput.min   = fmt(firstDay);
     dateInput.max   = fmt(lastDay);
+    document.getElementById('constrained-amount').value = '';
     document.getElementById('date-picker-title').textContent = `${unit} - ${month} (${selectedYear}年) 繳費日期`;
     document.getElementById('date-picker-confirm-btn').onclick = () => {
+      const amt = parseInt(document.getElementById('constrained-amount').value);
+      if (!dateInput.value || !amt || amt <= 0) return alert('請填寫日期與收款金額');
       state.payments[unit][selectedYear][month] = dateInput.value;
+      setAmt(unit, selectedYear, month, amt);
       saveState(); render(); openUnitSheet(unit); closeSheet('date-picker');
     };
     openSheet('date-picker');
