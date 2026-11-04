@@ -47,6 +47,7 @@
   .version-btn{background:none;border:1px solid var(--border);border-radius:6px;color:var(--text2);font-family:'DM Mono';font-size:10px;padding:3px 8px;cursor:pointer}
   .share-btn{background:var(--blue-bg);border:1px solid var(--blue);color:var(--blue);border-radius:6px;font-size:10px;padding:3px 10px;cursor:pointer;font-weight:600}
 
+  .btn-group{display:flex;gap:6px}
   #year-bar{background:var(--bg2);border-bottom:1px solid var(--border);padding:6px 16px;display:flex;align-items:center;justify-content:center;gap:12px;flex-shrink:0}
   .year-arrow{background:none;border:1px solid var(--border);border-radius:6px;color:var(--gold);font-size:14px;width:30px;height:28px;cursor:pointer;display:flex;align-items:center;justify-content:center}
   #year-display{font-family:'DM Mono';font-size:14px;color:var(--gold-light);letter-spacing:2px;min-width:80px;text-align:center}
@@ -175,8 +176,11 @@
   </div>
 
   <div class="version-bar">
-    <button class="version-btn" onclick="openVersionSheet()">v2.2.1 · 報表加回日期</button>
-    <button class="share-btn" onclick="shareStatus()">📤 分享報表</button>
+    <button class="version-btn" onclick="openVersionSheet()">v2.3.0 · 圖片報表</button>
+    <div class="btn-group">
+      <button class="share-btn" onclick="shareStatus()">📤 文字</button>
+      <button class="share-btn" onclick="shareImage()">🖼 圖片</button>
+    </div>
   </div>
 
   <div id="year-bar">
@@ -213,7 +217,7 @@
   </div>
 
   <div id="footer-version">
-    <button class="footer-ver-btn" onclick="openVersionSheet()">偉士大樓管委費系統 · v2.2.1 · 點擊查看更新履歷</button>
+    <button class="footer-ver-btn" onclick="openVersionSheet()">偉士大樓管委費系統 · v2.3.0 · 點擊查看更新履歷</button>
   </div>
 
   <div id="fab-area">
@@ -276,7 +280,24 @@
   <div class="sheet"><div class="sheet-handle"></div><div class="sheet-title">更新履歷</div>
 
     <div class="version-item">
-      <div><span class="version-tag latest">v2.2.1</span></div>
+      <div><span class="version-tag latest">v2.3.0</span></div>
+      <div class="version-vdate">2026-11-04</div>
+      <ul class="version-notes">
+        <li>新增「🖼 圖片」分享：報表產生成對齊的圖片，可直接傳到 LINE</li>
+        <li>原本的文字報表保留，按鈕改名為「📤 文字」</li>
+      </ul>
+    </div>
+
+    <div class="version-item">
+      <div><span class="version-tag">v2.2.2</span></div>
+      <div class="version-vdate">2026-11-04</div>
+      <ul class="version-notes">
+        <li>分享報表每戶改為三行（戶號／日期／金額），左右兩欄對齊且不再換行</li>
+      </ul>
+    </div>
+
+    <div class="version-item">
+      <div><span class="version-tag">v2.2.1</span></div>
       <div class="version-vdate">2026-11-04</div>
       <ul class="version-notes">
         <li>分享報表每戶同時顯示繳費日期與金額（第二行），避免 LINE 換行</li>
@@ -561,25 +582,105 @@ function shareStatus() {
   const now = new Date();
   let text = `🏢 偉士大樓繳費報表 ${selectedYear}年 (${now.getMonth()+1}/${now.getDate()})\n--------------------\n`;
   let sum = 0;
-  // 回傳 [第一行(狀態+戶號), 第二行(日期+金額)]
+  // 回傳 [戶號列, 日期, 金額]
   const cell = u => {
     const p = state.payments[u][selectedYear] || {};
     const pm = MONTHS.filter(m => p[m]);
-    if (!pm.length) return [`❌${u}`, ''];
+    if (!pm.length) return [`❌${u}`, '', ''];
     const t = unitYearTotal(u, selectedYear);
     sum += t;
     const d = p[pm[pm.length-1]];
     const dd = d.length >= 10 ? d.substring(5).replace('-', '/') : d;
-    return [`✅${u}`, `${dd} ${t ? '$' + t.toLocaleString() : '–'}`];
+    return [`✅${u}`, dd, t ? t.toLocaleString() : '–'];
   };
   FLOORS.forEach(f => {
     const L = cell(f.left), R = cell(f.right);
     text += `${L[0]}　${R[0]}\n`;
-    if (L[1] || R[1]) text += `${L[1] || '－'}　${R[1] || '－'}\n`;
+    if (L[1] || R[1]) {
+      // 第2、3行前面補全形空白(約等於 ✅ 的寬度)，讓左右兩欄大致對齊
+      text += `　${L[1] || '－'}　　${R[1] || '－'}\n`;
+      text += `　 ${L[2] || '－'}　　 ${R[2] || '－'}\n`;
+    }
   });
   text += `\n合計收入：NT$ ${sum.toLocaleString()}`;
   if (navigator.share) navigator.share({ title: '報表', text });
   else { navigator.clipboard.writeText(text); alert('報表已複製！'); }
+}
+
+// ── SHARE IMAGE ───────────────────────────────────────
+function rrect(g, x, y, w, h, r) {
+  g.beginPath(); g.moveTo(x+r, y);
+  g.arcTo(x+w, y, x+w, y+h, r); g.arcTo(x+w, y+h, x, y+h, r);
+  g.arcTo(x, y+h, x, y, r); g.arcTo(x, y, x+w, y, r); g.closePath();
+}
+async function shareImage() {
+  getYearPayments(selectedYear);
+  try { await document.fonts.ready; } catch(e) {}
+  const FONT = "'Noto Sans TC','PingFang TC','Microsoft JhengHei',sans-serif";
+  const W = 720, pad = 32, gap = 16, cellW = (W - pad*2 - gap) / 2, cellH = 112;
+  const top = 126, bottom = 130, S = 2;
+  const H = top + FLOORS.length * (cellH + gap) + bottom;
+  const c = document.createElement('canvas'); c.width = W*S; c.height = H*S;
+  const g = c.getContext('2d'); g.scale(S, S);
+  g.fillStyle = '#0d1117'; g.fillRect(0, 0, W, H);
+
+  const now = new Date();
+  g.textAlign = 'left';
+  g.fillStyle = '#c8a96e'; g.font = `700 36px ${FONT}`;
+  g.fillText('偉士大樓繳費報表', pad, 64);
+  g.fillStyle = '#8b949e'; g.font = `400 22px ${FONT}`;
+  g.fillText(`${selectedYear} 年　${now.getMonth()+1}/${now.getDate()} 製表`, pad, 100);
+
+  let sum = 0;
+  FLOORS.forEach((f, i) => {
+    const y = top + i * (cellH + gap);
+    [f.left, f.right].forEach((u, j) => {
+      const x = pad + j * (cellW + gap);
+      const p = state.payments[u][selectedYear] || {};
+      const pm = MONTHS.filter(m => p[m]);
+      const paid = pm.length > 0;
+      rrect(g, x, y, cellW, cellH, 14);
+      g.fillStyle = paid ? '#0d2818' : '#161b22'; g.fill();
+      g.lineWidth = 2; g.strokeStyle = paid ? '#3fb950' : '#30363d'; g.stroke();
+
+      g.textAlign = 'left'; g.fillStyle = '#e8c98e'; g.font = `700 30px ${FONT}`;
+      g.fillText(u, x + 20, y + 46);
+      g.textAlign = 'right'; g.font = `600 22px ${FONT}`;
+      g.fillStyle = paid ? '#3fb950' : '#f85149';
+      g.fillText(paid ? '已繳' : '未繳', x + cellW - 20, y + 44);
+
+      if (paid) {
+        const t = unitYearTotal(u, selectedYear); sum += t;
+        const d = p[pm[pm.length-1]];
+        const dd = d.length >= 10 ? d.substring(5).replace('-', '/') : d;
+        g.textAlign = 'left'; g.fillStyle = '#d8b4fe'; g.font = `500 24px ${FONT}`;
+        g.fillText(dd, x + 20, y + 90);
+        g.textAlign = 'right'; g.fillStyle = '#e6edf3'; g.font = `700 30px ${FONT}`;
+        g.fillText(t ? '$' + t.toLocaleString() : '–', x + cellW - 20, y + 92);
+      }
+    });
+  });
+
+  const ty = top + FLOORS.length * (cellH + gap) + 14;
+  g.strokeStyle = '#30363d'; g.lineWidth = 1;
+  g.beginPath(); g.moveTo(pad, ty); g.lineTo(W - pad, ty); g.stroke();
+  g.textAlign = 'left'; g.fillStyle = '#8b949e'; g.font = `400 26px ${FONT}`;
+  g.fillText('合計收入', pad, ty + 62);
+  g.textAlign = 'right'; g.fillStyle = '#e8c98e'; g.font = `700 44px ${FONT}`;
+  g.fillText('NT$ ' + sum.toLocaleString(), W - pad, ty + 66);
+
+  c.toBlob(blob => {
+    if (!blob) return alert('圖片產生失敗');
+    const file = new File([blob], `weishi-report-${selectedYear}.png`, { type: 'image/png' });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      navigator.share({ files: [file], title: '偉士大樓繳費報表' }).catch(() => {});
+    } else {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob); a.download = file.name;
+      document.body.appendChild(a); a.click(); a.remove();
+      alert('此瀏覽器無法直接分享圖片，已改為下載到手機。');
+    }
+  }, 'image/png');
 }
 
 // ── TABS ──────────────────────────────────────────────
